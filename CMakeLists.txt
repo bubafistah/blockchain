@@ -67,6 +67,7 @@ if (NOT ARCH OR ARCH STREQUAL "" OR ARCH STREQUAL "native" OR ARCH STREQUAL "def
 else()
   set(ARCH_ID "${ARCH}")
 endif()
+
 string(TOLOWER "${ARCH_ID}" ARM_ID)
 string(SUBSTRING "${ARM_ID}" 0 3 ARM_TEST)
 if (ARM_TEST STREQUAL "arm")
@@ -463,9 +464,16 @@ else()
     message(STATUS "AES support not available on ARMv7")
   elseif(ARM8)
     CHECK_CXX_ACCEPTS_FLAG("-march=${ARCH}+crypto" ARCH_PLUS_CRYPTO)
+    CHECK_CXX_ACCEPTS_FLAG("-flax-vector-conversions" FLAX_VECTOR_CONVERSIONS)
     if(ARCH_PLUS_CRYPTO)
       message(STATUS "Crypto extensions enabled for ARMv8")
-      set(ARCH_FLAG "-march=${ARCH}+crypto")
+      set(ARCH_FLAG "${ARCH_FLAG} -march=${ARCH}+crypto")
+    else()
+      message(STATUS "Crypto extensions unavailable on your ARMv8 device")
+    endif()
+    if(FLAX_VECTOR_CONVERSIONS)
+      message(STATUS "Flax vector conversions enabled for  ARMv8")
+      set(ARCH_FLAG "${ARCH_FLAG} -flax-vector-conversions")
     else()
       message(STATUS "Crypto extensions unavailable on your ARMv8 device")
     endif()
@@ -512,8 +520,8 @@ else()
 
     if(ARM6)
       message(STATUS "Selecting VFP for ARMv6")
-      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpu=vfp")
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpu=vfp")
+      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=armv8-a+crypto+fp")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=armv8-a+crypto+fp")
     endif(ARM6)
 
     if(ARM7)
@@ -742,5 +750,3 @@ endif()
 # This is not nice, distribution packagers should not enable this, but depend
 # on libunbound shipped with their distribution instead
 option(INSTALL_VENDORED_LIBUNBOUND "Install libunbound binary built from source vendored with this repo." OFF)
-
-
