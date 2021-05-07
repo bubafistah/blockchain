@@ -72,6 +72,9 @@ coverage:
 
 # Targets for specific prebuilt builds which will be advertised for updates by their build tag
 
+# Note: gcc-9 (ubuntu/focal) dropped support for older arm architectures. 
+# Builds for armv6 and armv7 will fail compiling with that version of gcc.
+
 release-static-linux-armv6:
 	mkdir -p build/release
 	cd build/release && cmake -D BUILD_TESTS=OFF -D ARCH="armv6zk" -D STATIC=ON -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-armv6" ../.. && $(MAKE)
@@ -82,7 +85,7 @@ release-static-linux-armv7:
 
 release-static-android:
 	mkdir -p build/release
-	cd build/release && cmake -D BUILD_TESTS=OFF -D ARCH="armv7-a" -D STATIC=ON -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D ANDROID=true -D INSTALL_VENDORED_LIBUNBOUND=ON -D BUILD_TAG="android" ../.. && $(MAKE)
+	cd build/release && cmake -D BUILD_TESTS=OFF -D ARCH="armv8-a" -D STATIC=ON -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D ANDROID=true -D INSTALL_VENDORED_LIBUNBOUND=ON -D BUILD_TAG="android" ../.. && $(MAKE)
 
 release-static-linux-armv8:
 	mkdir -p build/release
