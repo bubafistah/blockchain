@@ -120,3 +120,32 @@ freebsd-x86_64:
       - artifacts/lethean-wallet-vpn-rpc
       - artifacts/letheand
     expire_in: 1 week
+
+android:
+  # Official docker image.
+  image: docker:19.03.12
+  stage: build
+  services:
+    - docker:19.03.12-dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  after_script:
+    - docker stop release-android
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:release-android || true
+    - docker build --build-arg RELEASE_TYPE=release-static-android --cache-from $CI_REGISTRY_IMAGE:release-android --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:release-android .
+    - docker push $CI_REGISTRY_IMAGE:release-android
+    - docker run --name=release-android -d $CI_REGISTRY_IMAGE:release-android
+    - docker cp release-android:/home/leathean/bin $CI_PROJECT_DIR/artifacts
+  only:
+    - master
+    - fix/arm-build
+  artifacts:
+    name: android
+    paths:
+      - artifacts/lethean-blockchain-export
+      - artifacts/lethean-blockchain-import
+      - artifacts/lethean-wallet-cli
+      - artifacts/lethean-wallet-rpc
+      - artifacts/lethean-wallet-vpn-rpc
+      - artifacts/letheand
