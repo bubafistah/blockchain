@@ -3,6 +3,7 @@ include:
 
 
 mac-x86_64:
+  stage: build
   needs: ["docker-build"]
   only:
     - master
