@@ -34,31 +34,31 @@ mac-x86_64:
 #      - artifacts
 
 
-freebsd-x86_64:
-  stage: build
-  before_script:
-    - export RELEASE_TYPE release-static-freebsd-x86_64
-  needs: docker-build
-  only:
-    - master
-  artifacts:
-    name: freebsd-x86_64
-    paths:
-      - artifacts
-
-win64:
-  stage: build
-  tags:
-    - shared-windows
-    - windows
-    - windows-1809
-  before_script:
-    - export RELEASE_TYPE release-static-win64
-  needs: docker-build
-  only:
-    - master
-  artifacts:
-    name: win64
-    paths:
-      - artifacts
+#freebsd-x86_64:
+#  stage: build
+#  before_script:
+#    - export RELEASE_TYPE release-static-freebsd-x86_64
+#  needs: docker-build
+#  only:
+#    - master
+#  artifacts:
+#    name: freebsd-x86_64
+#    paths:
+#      - artifacts
+#
+#win64:
+#  stage: build
+#  tags:
+#    - shared-windows
+#    - windows
+#    - windows-1809
+#  before_script:
+#    - export RELEASE_TYPE release-static-win64
+#  needs: docker-build
+#  only:
+#    - master
+#  artifacts:
+#    name: win64
+#    paths:
+#      - artifacts
 
