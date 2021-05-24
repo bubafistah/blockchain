@@ -1,5 +1,21 @@
-# Uses a pre configured ubuntu:16.04 image
-FROM registry.gitlab.com/lethean.io/devops/build:latest as builder
+FROM ubuntu:16.04
+
+RUN set -ex \
+    && apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
+        build-essential ca-certificates cmake pkg-config git apt-utils software-properties-common;
+
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test && apt-get update
+
+RUN set -ex \
+    && apt-get install -y \
+        libboost-all-dev libssl-dev libzmq3-dev \
+        libunbound-dev libsodium-dev libunwind8-dev liblzma-dev libreadline6-dev \
+        libldns-dev libexpat1-dev doxygen graphviz libpgm-dev qttools5-dev-tools \
+        libhidapi-dev libusb-1.0-0-dev libprotobuf-dev protobuf-compiler libudev-dev;
+
+RUN apt install -y gcc-9 g++-9 gcc-arm-none-eabi binutils-arm-none-eabi gdb-arm-none-eabi openocd
 
 # Where all the works done.
 WORKDIR /usr/local/src/lethean.io/blockchain/lethean
