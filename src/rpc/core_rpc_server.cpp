@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2017, The Monero Project
-//
+// 
 // All rights reserved.
-//
+// 
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-//
+// 
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //    conditions and the following disclaimer.
-//
+// 
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //    of conditions and the following disclaimer in the documentation and/or other
 //    materials provided with the distribution.
-//
+// 
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //    used to endorse or promote products derived from this software without specific
 //    prior written permission.
-//
+// 
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -25,7 +25,7 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
+// 
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "include_base_utils.h"
@@ -48,7 +48,7 @@ using namespace epee;
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon.rpc"
 
 #define MAX_RESTRICTED_FAKE_OUTS_COUNT 40
-#define MAX_RESTRICTED_GLOBAL_FAKE_OUTS_COUNT 5000
+#define MAX_RESTRICTED_GLOBAL_FAKE_OUTS_COUNT 500
 
 namespace cryptonote
 {
@@ -474,37 +474,24 @@ namespace cryptonote
     std::unordered_set<crypto::hash> pool_tx_hashes;
     if (!missed_txs.empty())
     {
-		std::list<transaction> pool_txs;
-		bool r = m_core.get_pool_transactions(pool_txs);
-		if (r)
-		{
-			// sort to match original request
-			std::list<transaction> sorted_txs;
-			std::list<cryptonote::transaction>::const_iterator i;
-			for (const crypto::hash &h : vh)
-			{
-				if (std::find(missed_txs.begin(), missed_txs.end(), h) == missed_txs.end())
-				{
-					// core returns the ones it finds in the right order
-					if (get_transaction_hash(txs.front()) != h)
-					{
-						res.status = "Failed: tx hash mismatch";
-						return true;
-					}
-					sorted_txs.push_back(std::move(txs.front()));
-					txs.pop_front();
-				}
-				else if ((i = std::find_if(pool_txs.begin(), pool_txs.end(), [h](cryptonote::transaction &tx) { return h == cryptonote::get_transaction_hash(tx); })) != pool_txs.end())
-				{
-					sorted_txs.push_back(*i);
-					missed_txs.remove(h);
-					pool_tx_hashes.insert(h);
-					++found_in_pool;
-				}
-			}
-			txs = sorted_txs;
-		}
-		LOG_PRINT_L2("Found " << found_in_pool << "/" << vh.size() << " transactions in the pool");
+      std::list<transaction> pool_txs;
+      bool r = m_core.get_pool_transactions(pool_txs);
+      if(r)
+      {
+        for (std::list<transaction>::const_iterator i = pool_txs.begin(); i != pool_txs.end(); ++i)
+        {
+          crypto::hash tx_hash = get_transaction_hash(*i);
+          std::list<crypto::hash>::iterator mi = std::find(missed_txs.begin(), missed_txs.end(), tx_hash);
+          if (mi != missed_txs.end())
+          {
+            pool_tx_hashes.insert(tx_hash);
+            missed_txs.erase(mi);
+            txs.push_back(*i);
+            ++found_in_pool;
+          }
+        }
+      }
+      LOG_PRINT_L2("Found " << found_in_pool << "/" << vh.size() << " transactions in the pool");
     }
 
     std::list<std::string>::const_iterator txhi = req.txs_hashes.begin();
@@ -741,7 +728,7 @@ namespace cryptonote
     const miner& lMiner = m_core.get_miner();
     res.active = lMiner.is_mining();
     res.is_background_mining_enabled = lMiner.get_is_background_mining_enabled();
-
+    
     if ( lMiner.is_mining() ) {
       res.speed = lMiner.get_speed();
       res.threads_count = lMiner.get_threads_count();
@@ -993,7 +980,7 @@ namespace cryptonote
       error_resp.message = "Wrong block blob";
       return false;
     }
-
+    
     // Fixing of high orphan issue for most pools
     // Thanks Boolberry!
     block b = AUTO_VAL_INIT(b);
@@ -1547,7 +1534,7 @@ namespace cryptonote
 			m_p2p.delete_connections(count);
 		  }
 	  }
-
+	  
 	  else
 		m_p2p.m_config.m_net_config.connections_count = req.out_peers;
 		*/
@@ -1570,7 +1557,7 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_update(const COMMAND_RPC_UPDATE::request& req, COMMAND_RPC_UPDATE::response& res)
   {
-    static const char software[] = "monero";
+    static const char software[] = "lethean";
 #ifdef BUILD_TAG
     static const char buildtag[] = BOOST_PP_STRINGIZE(BUILD_TAG);
     static const char subdir[] = "cli";
@@ -1730,13 +1717,12 @@ namespace cryptonote
       res.peers.push_back({c});
     const cryptonote::block_queue &block_queue = m_p2p.get_payload_object().get_block_queue();
     block_queue.foreach([&](const cryptonote::block_queue::span &span) {
-      const std::string span_connection_id = epee::string_tools::pod_to_hex(span.connection_id);
       uint32_t speed = (uint32_t)(100.0f * block_queue.get_speed(span.connection_id) + 0.5f);
       std::string address = "";
       for (const auto &c: m_p2p.get_payload_object().get_connections())
-        if (c.connection_id == span_connection_id)
+        if (c.connection_id == span.connection_id)
           address = c.address;
-      res.spans.push_back({span.start_block_height, span.nblocks, span_connection_id, (uint32_t)(span.rate + 0.5f), speed, span.size, address});
+      res.spans.push_back({span.start_block_height, span.nblocks, span.connection_id, (uint32_t)(span.rate + 0.5f), speed, span.size, address});
       return true;
     });
 

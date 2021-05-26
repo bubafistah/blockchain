@@ -52,7 +52,6 @@ set(wallet_private_headers
   wallet_args.h
   wallet_errors.h
   wallet_rpc_server.h
-  wallet_vpn_rpc_server.h
   wallet_rpc_server_commands_defs.h
   wallet_rpc_server_error_codes.h
   node_rpc_proxy.h
@@ -77,7 +76,6 @@ target_link_libraries(wallet
     cryptonote_core
     mnemonics
     p2p
-    legacy
     ${Boost_CHRONO_LIBRARY}
     ${Boost_SERIALIZATION_LIBRARY}
     ${Boost_FILESYSTEM_LIBRARY}
@@ -92,16 +90,10 @@ if (NOT BUILD_GUI_DEPS)
   set(wallet_rpc_sources
     wallet_rpc_server.cpp)
 
-  set(wallet_vpn_rpc_sources
-    wallet_vpn_rpc_server.cpp)
-
   set(wallet_rpc_headers)
 
   set(wallet_rpc_private_headers
     wallet_rpc_server.h)
-
-  set(wallet_vpn_rpc_private_headers
-    wallet_vpn_rpc_server.h)
 
   monero_private_headers(wallet_rpc_server
     ${wallet_rpc_private_headers})
@@ -109,13 +101,6 @@ if (NOT BUILD_GUI_DEPS)
     ${wallet_rpc_sources}
     ${wallet_rpc_headers}
     ${wallet_rpc_private_headers})
-
-  monero_private_headers(wallet_vpn_rpc_server
-    ${wallet_vpn_rpc_private_headers})
-  monero_add_executable(wallet_vpn_rpc_server
-    ${wallet_vpn_rpc_sources}
-    ${wallet_rpc_headers}
-    ${wallet_vpn_rpc_private_headers})
 
   target_link_libraries(wallet_rpc_server
     PRIVATE
@@ -136,32 +121,12 @@ if (NOT BUILD_GUI_DEPS)
     PROPERTY
       OUTPUT_NAME "lethean-wallet-rpc")
   install(TARGETS wallet_rpc_server DESTINATION bin)
-
-  target_link_libraries(wallet_vpn_rpc_server
-    PRIVATE
-      wallet
-      epee
-      rpc
-      cryptonote_core
-      cncrypto
-      common
-      ${Boost_CHRONO_LIBRARY}
-      ${Boost_PROGRAM_OPTIONS_LIBRARY}
-      ${Boost_FILESYSTEM_LIBRARY}
-      ${Boost_THREAD_LIBRARY}
-      ${CMAKE_THREAD_LIBS_INIT}
-      ${EXTRA_LIBRARIES})
-  add_dependencies(wallet_vpn_rpc_server version)
-  set_property(TARGET wallet_vpn_rpc_server
-    PROPERTY
-      OUTPUT_NAME "lethean-wallet-vpn-rpc")
-  install(TARGETS wallet_vpn_rpc_server DESTINATION bin)
 endif()
 
 
 # build and install libwallet_merged only if we building for GUI
 if (BUILD_GUI_DEPS)
-    set(libs_to_merge wallet cryptonote_core cryptonote_basic mnemonics legacy common cncrypto ringct)
+    set(libs_to_merge wallet cryptonote_core cryptonote_basic mnemonics common cncrypto ringct)
 
     foreach(lib ${libs_to_merge})
         list(APPEND objlibs $<TARGET_OBJECTS:obj_${lib}>) # matches naming convention in src/CMakeLists.txt

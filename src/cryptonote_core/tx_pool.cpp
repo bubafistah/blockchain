@@ -149,8 +149,7 @@ namespace cryptonote
       }
 
       uint64_t outputs_amount = get_outs_money_amount(tx);
-	  //support fusion TXs - remove >= and reduce to > comparison
-      if(outputs_amount > inputs_amount)
+      if(outputs_amount >= inputs_amount)
       {
         LOG_PRINT_L1("transaction use more money then it has: use " << print_money(outputs_amount) << ", have " << print_money(inputs_amount));
         tvc.m_verifivation_failed = true;
@@ -856,7 +855,7 @@ namespace cryptonote
 
     size_t max_total_size_pre_v5 = (130 * median_size) / 100 - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     size_t max_total_size_v5 = 2 * median_size - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
-    size_t max_total_size = version >= BLOCK_MAJOR_VERSION_4 ? max_total_size_v5 : max_total_size_pre_v5;
+    size_t max_total_size = version >= 5 ? max_total_size_v5 : max_total_size_pre_v5;
     std::unordered_set<crypto::key_image> k_images;
 
     LOG_PRINT_L2("Filling block template, median size " << median_size << ", " << m_txs_by_fee_and_receive_time.size() << " txes in the pool");
@@ -877,8 +876,8 @@ namespace cryptonote
         continue;
       }
 
-      // start using the optimal filling algorithm from v4
-      if (version >= BLOCK_MAJOR_VERSION_4)
+      // start using the optimal filling algorithm from v5
+      if (version >= 5)
       {
         // If we're getting lower coinbase tx,
         // stop including more tx

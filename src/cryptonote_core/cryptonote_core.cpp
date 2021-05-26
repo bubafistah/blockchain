@@ -156,20 +156,21 @@ namespace cryptonote
 
     command_line::add_arg(desc, command_line::arg_testnet_on);
     command_line::add_arg(desc, command_line::arg_dns_checkpoints);
+    command_line::add_arg(desc, command_line::arg_db_type);
     command_line::add_arg(desc, command_line::arg_prep_blocks_threads);
     command_line::add_arg(desc, command_line::arg_fast_block_sync);
+    command_line::add_arg(desc, command_line::arg_db_sync_mode);
+    command_line::add_arg(desc, command_line::arg_db_salvage);
     command_line::add_arg(desc, command_line::arg_show_time_stats);
     command_line::add_arg(desc, command_line::arg_block_sync_size);
     command_line::add_arg(desc, command_line::arg_check_updates);
     command_line::add_arg(desc, command_line::arg_fluffy_blocks);
-    command_line::add_arg(desc, command_line::arg_standard_json);
 
     // we now also need some of net_node's options (p2p bind arg, for separate data dir)
     command_line::add_arg(desc, nodetool::arg_testnet_p2p_bind_port, false);
     command_line::add_arg(desc, nodetool::arg_p2p_bind_port, false);
 
     miner::init_options(desc);
-    BlockchainDB::init_options(desc);
   }
   //-----------------------------------------------------------------------------------------------
   bool core::handle_command_line(const boost::program_options::variables_map& vm)
@@ -200,7 +201,6 @@ namespace cryptonote
     set_enforce_dns_checkpoints(command_line::get_arg(vm, command_line::arg_dns_checkpoints));
     test_drop_download_height(command_line::get_arg(vm, command_line::arg_test_drop_download_height));
     m_fluffy_blocks_enabled = m_testnet || get_arg(vm, command_line::arg_fluffy_blocks);
-    m_standard_json_enabled = get_arg(vm, command_line::arg_standard_json);
 
     if (command_line::get_arg(vm, command_line::arg_test_drop_download) == true)
       test_drop_download();
@@ -281,9 +281,9 @@ namespace cryptonote
       m_config_folder_mempool = m_config_folder_mempool + "/" + m_port;
     }
 
-    std::string db_type = command_line::get_arg(vm, cryptonote::arg_db_type);
-    std::string db_sync_mode = command_line::get_arg(vm, cryptonote::arg_db_sync_mode);
-    bool db_salvage = command_line::get_arg(vm, cryptonote::arg_db_salvage) != 0;
+    std::string db_type = command_line::get_arg(vm, command_line::arg_db_type);
+    std::string db_sync_mode = command_line::get_arg(vm, command_line::arg_db_sync_mode);
+    bool db_salvage = command_line::get_arg(vm, command_line::arg_db_salvage) != 0;
     bool fast_sync = command_line::get_arg(vm, command_line::arg_fast_block_sync) != 0;
     uint64_t blocks_threads = command_line::get_arg(vm, command_line::arg_prep_blocks_threads);
     std::string check_updates_string = command_line::get_arg(vm, command_line::arg_check_updates);
@@ -303,7 +303,7 @@ namespace cryptonote
       if (boost::filesystem::exists(old_files / "blockchain.bin"))
       {
         MWARNING("Found old-style blockchain.bin in " << old_files.string());
-        MWARNING("Monero now uses a new format. You can either remove blockchain.bin to start syncing");
+        MWARNING("Lethean now uses a new format. You can either remove blockchain.bin to start syncing");
         MWARNING("the blockchain anew, or use lethean-blockchain-export and lethean-blockchain-import to");
         MWARNING("convert your existing blockchain.bin to the new format. See README.md for instructions.");
         return false;
@@ -518,7 +518,7 @@ namespace cryptonote
       if (bad_semantics_txes[idx].find(tx_hash) != bad_semantics_txes[idx].end())
       {
         bad_semantics_txes_lock.unlock();
-        LOG_PRINT_L1("Transaction " << tx_hash << " already seen with bad semantics, rejected");
+        LOG_PRINT_L1("Transaction already seen with bad semantics, rejected");
         tvc.m_verifivation_failed = true;
         return false;
       }
@@ -723,18 +723,15 @@ namespace cryptonote
       get_inputs_money_amount(tx, amount_in);
       uint64_t amount_out = get_outs_money_amount(tx);
 
-	  //support fusion TXs - remove <= and reduce to < comparison
-      if(amount_in < amount_out)
+      if(amount_in <= amount_out)
       {
         MERROR_VER("tx with wrong amounts: ins " << amount_in << ", outs " << amount_out << ", rejected for tx id= " << get_transaction_hash(tx));
         return false;
       }
     }
     // for version > 1, ringct signatures check verifies amounts match
-	// CHANGEME - this should be reduced from *50 in the future; currently only allowing accommodation of large LTHN blocks every 5
-	// as XMR receives pool transactions at variable times, independent of the block sync,
-	// we cannot use height % 5 as an indicator of whether or not TX size is appropriate - thus appropriat TX size is multiplied by 50
-    if(!keeped_by_block && get_object_blobsize(tx) >= m_blockchain_storage.get_current_cumulative_blocksize_limit() * 50 - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE)
+
+    if(!keeped_by_block && get_object_blobsize(tx) >= m_blockchain_storage.get_current_cumulative_blocksize_limit() - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE)
     {
       MERROR_VER("tx is too large " << get_object_blobsize(tx) << ", expected not bigger than " << m_blockchain_storage.get_current_cumulative_blocksize_limit() - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE);
       return false;
@@ -807,10 +804,12 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   size_t core::get_block_sync_size(uint64_t height) const
   {
+    static const uint64_t quick_height = m_testnet ? 801219 : 1220516;
     if (block_sync_size > 0)
       return block_sync_size;
-		uint8_t version = get_hard_fork_version(height);
-    return (version >= BLOCK_MAJOR_VERSION_4 ? BLOCKS_SYNCHRONIZING_DEFAULT_COUNT : BLOCKS_SYNCHRONIZING_DEFAULT_COUNT_PRE_V4);
+    if (height >= quick_height)
+      return BLOCKS_SYNCHRONIZING_DEFAULT_COUNT;
+    return BLOCKS_SYNCHRONIZING_DEFAULT_COUNT_PRE_V4;
   }
   //-----------------------------------------------------------------------------------------------
   std::pair<uint64_t, uint64_t> core::get_coinbase_tx_sum(const uint64_t start_offset, const size_t count)
@@ -825,13 +824,13 @@ namespace cryptonote
       std::list<transaction> txs;
       std::list<crypto::hash> missed_txs;
       uint64_t coinbase_amount = get_outs_money_amount(b.miner_tx);
-      this->get_transactions(b.tx_hashes, txs, missed_txs);
+      this->get_transactions(b.tx_hashes, txs, missed_txs);      
       uint64_t tx_fee_amount = 0;
       for(const auto& tx: txs)
       {
         tx_fee_amount += get_tx_fee(tx);
       }
-
+      
       emission_amount += coinbase_amount - tx_fee_amount;
       total_fee_amount += tx_fee_amount;
       return true;
@@ -1196,16 +1195,13 @@ namespace cryptonote
   bool core::get_pool_transaction_stats(struct txpool_stats& stats) const
   {
     m_mempool.get_transaction_stats(stats);
-    if (standard_json_enabled()) {
-			stats.histo.resize(0);
-		}
     return true;
   }
   //-----------------------------------------------------------------------------------------------
   bool core::get_pool_transaction(const crypto::hash &id, cryptonote::blobdata& tx) const
   {
     return m_mempool.get_transaction(id, tx);
-  }
+  }  
   //-----------------------------------------------------------------------------------------------
   bool core::pool_has_tx(const crypto::hash &id) const
   {
@@ -1313,10 +1309,6 @@ namespace cryptonote
     static const char buildtag[] = "source";
     static const char subdir[] = "source"; // because it can never be simple
 #endif
-
-    MCDEBUG("updates", "Skipping checking for a new " << software << " version - not configured for Lethean");
-    //CHANGE ME
-    return true;
 
     if (check_updates_level == UPDATES_DISABLED)
       return true;

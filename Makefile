@@ -117,12 +117,22 @@ fuzz:
 	cd build/fuzz && cmake -D BUILD_TESTS=ON -D USE_LTO=OFF -D CMAKE_C_COMPILER=afl-gcc -D CMAKE_CXX_COMPILER=afl-g++ -D ARCH="x86-64" -D CMAKE_BUILD_TYPE=fuzz -D BUILD_TAG="linux-x64" ../.. && $(MAKE)
 
 clean:
-#	@echo "WARNING: Back-up your wallet if it exists within ./build!" ; \
-#        read -r -p "This will destroy the build directory, continue (y/N)?: " CONTINUE; \
-#	[ $$CONTINUE = "y" ] || [ $$CONTINUE = "Y" ] || (echo "Exiting."; exit 1;)
+	@echo "WARNING: Back-up your wallet if it exists within ./build!" ; \
+        read -r -p "This will destroy the build directory, continue (y/N)?: " CONTINUE; \
+	[ $$CONTINUE = "y" ] || [ $$CONTINUE = "Y" ] || (echo "Exiting."; exit 1;)
 	rm -rf build
+	docker container rm tempbuild
 
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
 
 .PHONY: all cmake-debug debug debug-test debug-all cmake-release release release-test release-all clean tags
+
+.PHONY: docker
+docker:
+	docker build --no-cache --pull -t tp . &&  docker run -d --name=tp tp \
+	&& docker cp tp:/usr/local/bin build/ && docker stop tp && docker container rm tp
+
+.PHONY: test-daemon
+test-daemon:
+	build/letheand --data-dir=data/ --log-level=4

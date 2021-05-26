@@ -59,7 +59,7 @@ namespace
   const command_line::arg_descriptor<bool> arg_trusted_daemon = {"trusted-daemon", "Enable commands which rely on a trusted daemon", false};
   const command_line::arg_descriptor<std::string> arg_wallet_dir = {"wallet-dir", "Directory for newly created wallets"};
 
-  constexpr const char default_rpc_username[] = "monero";
+  constexpr const char default_rpc_username[] = "lethean";
 }
 
 namespace tools
@@ -233,9 +233,9 @@ namespace tools
       MWARNING("Requested ring size " << (mixin + 1) << " too low for hard fork 6, using 5");
       mixin = 4;
     }
-    else if (mixin < 2 && m_wallet->use_fork_rules(BLOCK_MAJOR_VERSION_4, 10)) {
-      MWARNING("Requested ring size " << (mixin + 1) << " too low for hard fork 4, using 4");
-      mixin = 3;
+    else if (mixin < 2 && m_wallet->use_fork_rules(2, 10)) {
+      MWARNING("Requested ring size " << (mixin + 1) << " too low for hard fork 2, using 3");
+      mixin = 2;
     }
     return mixin;
   }
@@ -379,7 +379,7 @@ namespace tools
           }
           if (addresses.empty())
           {
-            er.message = std::string("No Monero address found at ") + url;
+            er.message = std::string("No Lethean address found at ") + url;
             return {};
           }
           return addresses[0];
@@ -1084,7 +1084,7 @@ namespace tools
         }
         if (addresses.empty())
         {
-          er.message = std::string("No Monero address found at ") + url;
+          er.message = std::string("No Lethean address found at ") + url;
           return {};
         }
         return addresses[0];
@@ -1496,7 +1496,7 @@ namespace tools
         }
         if (addresses.empty())
         {
-          er.message = std::string("No Monero address found at ") + url;
+          er.message = std::string("No Lethean address found at ") + url;
           return {};
         }
         return addresses[0];

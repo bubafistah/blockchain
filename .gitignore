@@ -3,10 +3,6 @@
 /build
 /tags
 log/
-.idea
-artifacts
-
-artifacts
 
 # vim swap files
 *.swp
@@ -27,10 +23,6 @@ cscope.po.out
 external/miniupnpc/Makefile
 miniupnpcstrings.h
 version/
-
-# Ignore version file created by the GUI
-version.sh
-
 # Created by https://www.gitignore.io
 
 ### C++ ###
@@ -69,7 +61,7 @@ CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
 install_manifest.txt
-#*.cmake
+*.cmake
 
 ### Linux ###
 *~
@@ -86,6 +78,7 @@ bin/
 tmp/
 *.tmp
 *.bak
+*.swp
 *~.nib
 local.properties
 .settings/
@@ -108,11 +101,6 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
+.idea/
 
 /testnet
-
-## Deb ##
-debian/.debhelper
-debian/*.log
-debian/*stamp
-debian/files

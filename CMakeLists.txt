@@ -33,7 +33,7 @@ endif()
 
 cmake_minimum_required(VERSION 2.8.7)
 
-project(monero)
+project(lethean)
 
 function (die msg)
   if (NOT WIN32)
@@ -108,11 +108,11 @@ set(CMAKE_C_FLAGS_RELEASE "-DNDEBUG ${OPT_FLAGS_RELEASE}")
 set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${OPT_FLAGS_RELEASE}")
 
 # set this to 0 if per-block checkpoint needs to be disabled
-set(PER_BLOCK_CHECKPOINT 1)
-
-if(PER_BLOCK_CHECKPOINT)
-  add_definitions("-DPER_BLOCK_CHECKPOINT")
-endif()
+#set(PER_BLOCK_CHECKPOINT 0)
+#
+#if(PER_BLOCK_CHECKPOINT)
+#  add_definitions("-DPER_BLOCK_CHECKPOINT")
+#endif()
 
 list(INSERT CMAKE_MODULE_PATH 0
   "${CMAKE_SOURCE_DIR}/cmake")
@@ -666,15 +666,7 @@ endif()
 
 list(APPEND EXTRA_LIBRARIES ${CMAKE_DL_LIBS})
 
-# when ON - will install libwallet_merged into "lib"
-option(BUILD_GUI_DEPS "Build GUI dependencies." OFF)
-
 option(USE_READLINE "Build with GNU readline support." ON)
-
-if(BUILD_GUI_DEPS)
-  set(USE_READLINE OFF)
-endif()
-
 if(USE_READLINE)
   find_package(Readline)
   if(READLINE_FOUND AND GNU_READLINE_FOUND)
@@ -738,6 +730,9 @@ if(BUILD_DOCUMENTATION)
       COMMENT "Generating API documentation with Doxygen.." VERBATIM)
   endif()
 endif()
+
+# when ON - will install libwallet_merged into "lib"
+option(BUILD_GUI_DEPS "Build GUI dependencies." OFF)
 
 # This is not nice, distribution packagers should not enable this, but depend
 # on libunbound shipped with their distribution instead

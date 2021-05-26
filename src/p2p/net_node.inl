@@ -102,7 +102,7 @@ namespace nodetool
     const command_line::arg_descriptor<int64_t> arg_limit_rate_down = {"limit-rate-down", "set limit-rate-down [kB/s]", -1};
     const command_line::arg_descriptor<int64_t> arg_limit_rate = {"limit-rate", "set limit-rate [kB/s]", -1};
 
-    const command_line::arg_descriptor<bool> arg_save_graph = {"save-graph", "Save data for dr monero", false};
+    const command_line::arg_descriptor<bool> arg_save_graph = {"save-graph", "Save data for dr lethean", false};
   }
   //-----------------------------------------------------------------------------------
   template<class t_payload_net_handler>
@@ -407,15 +407,16 @@ namespace nodetool
   std::set<std::string> node_server<t_payload_net_handler>::get_seed_nodes(bool testnet) const
   {
     std::set<std::string> full_addrs;
-    if (testnet) //CHANGE ME
+    if (testnet)
     {
-		full_addrs.insert("35.217.36.217:38772");
+      full_addrs.insert("212.83.175.67:28080");
+      full_addrs.insert("5.9.100.248:28080");
+      full_addrs.insert("163.172.182.165:28080");
+      full_addrs.insert("195.154.123.123:28080");
+      full_addrs.insert("212.83.172.165:28080");
     }
     else
     {
-        // Anycast IP, N+1 nodes
-        full_addrs.insert("35.217.36.217:48772");
-        // Community Supporters contact@lethean.io to donate
         full_addrs.insert("89.221.223.126:48772");
     }
     return full_addrs;
@@ -714,10 +715,6 @@ namespace nodetool
   template<class t_payload_net_handler>
   bool node_server<t_payload_net_handler>::send_stop_signal()
   {
-    MDEBUG("[node] sending stop signal");
-    m_net_server.send_stop_signal();
-    MDEBUG("[node] Stop signal sent");
-
     std::list<boost::uuids::uuid> connection_ids;
     m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt) {
       connection_ids.push_back(cntxt.m_connection_id);
@@ -727,7 +724,8 @@ namespace nodetool
       m_net_server.get_config_object().close(connection_id);
 
     m_payload_handler.stop();
-
+    m_net_server.send_stop_signal();
+    MDEBUG("[node] Stop signal sent");
     return true;
   }
   //-----------------------------------------------------------------------------------
@@ -1621,7 +1619,7 @@ namespace nodetool
       {  
         if(code < 0)
         {
-          LOG_DEBUG_CC(context_, "COMMAND_REQUEST_SUPPORT_FLAGS invoke failed. (" << code <<  ", " << epee::levin::get_err_descr(code) << ")");
+          LOG_WARNING_CC(context_, "COMMAND_REQUEST_SUPPORT_FLAGS invoke failed. (" << code <<  ", " << epee::levin::get_err_descr(code) << ")");
           return;
         }
         
@@ -1718,13 +1716,10 @@ namespace nodetool
       });
     }
     
-	//CHANGEME support flags disabled until more XMR-based clients are present on the network.
-    /*
-	try_get_support_flags(context, [](p2p_connection_context& flags_context, const uint32_t& support_flags) 
+    try_get_support_flags(context, [](p2p_connection_context& flags_context, const uint32_t& support_flags) 
     {
       flags_context.support_flags = support_flags;
     });
-	*/
 
     //fill response
     m_peerlist.get_peerlist_head(rsp.local_peerlist_new);

@@ -41,8 +41,7 @@
 #include <boost/utility/value_init.hpp>
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp> // TODO
-#include <boost/thread/thread.hpp> // TODO
-#include <boost/thread/condition_variable.hpp> // TODO
+#include <boost/thread/v2/thread.hpp> // TODO
 #include "misc_language.h"
 #include "pragma_comp_defs.h"
 
@@ -439,7 +438,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
 					if (!all_ok) {
 						MDEBUG("do_send() DONE ***FAILED*** from packet="<<cb<<" B for ptr="<<ptr);
 						MDEBUG("do_send() SEND was aborted in middle of big package - this is mostly harmless "
-							<< " (e.g. peer closed connection) but if it causes trouble tell us at #monero-dev. " << cb);
+							<< " (e.g. peer closed connection) but if it causes trouble tell us at #lethean-dev. " << cb);
 						return false; // partial failure in sending
 					}
 					pos = pos+len;
