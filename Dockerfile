@@ -1,20 +1,6 @@
-FROM lthn/chain as builder
+FROM lthn/build as builder
 
-ENV SRC_DIR /usr/local/src/chain
-
-RUN set -x \
-  && buildDeps=' \
-      ca-certificates \
-      cmake \
-      g++ \
-      git \
-      libboost1.58-all-dev \
-      libssl-dev \
-      make \
-      pkg-config \
-  ' \
-  && apt-get -qq update \
-  && apt-get -qq --no-install-recommends install $buildDeps
+ENV SRC_DIR /home/lthn/src/chain
 
 WORKDIR $SRC_DIR
 COPY . .
