@@ -1,32 +1,39 @@
 FROM lthn/build as builder
 
-ENV SRC_DIR /home/lthn/src/chain
+WORKDIR /home/lthn/src/chain
 
-WORKDIR $SRC_DIR
 COPY . .
-RUN make -j5 release-static
-FROM ubuntu:20.04
+# make type to use, to change --build-arg RELEASE_TYPE=release-test
+ARG RELEASE_TYPE=release-static
+ARG BUILD_THREADS=1
+RUN rm -rf build && make -j${BUILD_THREADS} ${RELEASE_TYPE}
 
-COPY --from=builder build/release/bin/* /usr/local/bin/
+# Build stage over, now we make the end image.
+FROM ubuntu:20.04 as final
+# a copy of the binaries for extraction.
 
-RUN  rm -r $SRC_DIR \
-  && apt-get -qq --auto-remove purge $buildDeps
+ENV BASE_DIR="/home/lthn"
+ENV IMG_TAG="chain"
+ENV WALLET_DIR="${BASE_DIR}/wallet"
+ENV BIN_DIR="${BASE_DIR}/cli"
+ENV CONF_DIR="${BASE_DIR}/config/${IMG_TAG}"
+ENV LOG_DIR="${BASE_DIR}/log"
+ENV SRC_DIR="${BASE_DIR}/src/${IMG_TAG}"
+ENV DATA_DIR="${BASE_DIR}/data/${IMG_TAG}"
 
-# Contains the blockchain
-VOLUME /home/lthn/data/chain
+RUN adduser --system --group lthn
 
-# Generate your wallet via accessing the container and run:
-# cd /wallet
-# lethean-wallet-cli
-VOLUME /wallet
+# grab the files made in the builder stage
+COPY --chown=lthn:lthn --from=lthn/sdk-shell $BASE_DIR $BASE_DIR
+COPY --chown=lthn:lthn --from=builder /home/lthn/src/chain/build/release/bin $BIN_DIR
+WORKDIR /home/lthn
 
-ENV LOG_LEVEL 0
-ENV P2P_BIND_IP 0.0.0.0
-ENV P2P_BIND_PORT 18080
-ENV RPC_BIND_IP 127.0.0.1
-ENV RPC_BIND_PORT 18081
+RUN chmod +x lthn.sh cli/* && mkdir -p $DATA_DIR && chown -R lthn:lthn $DATA_DIR
 
-EXPOSE 18080
-EXPOSE 18081
+# ports needed when running this image
+EXPOSE 48782
+EXPOSE 48772
+USER lthn
 
-CMD letheand --log-level=$LOG_LEVEL --p2p-bind-ip=$P2P_BIND_IP --p2p-bind-port=$P2P_BIND_PORT --rpc-bind-ip=$RPC_BIND_IP --rpc-bind-port=$RPC_BIND_PORT
+
+ENTRYPOINT ["./lthn.sh", "sync"]
