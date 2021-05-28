@@ -130,9 +130,9 @@ tags:
 
 .PHONY: docker
 docker:
-	docker build --no-cache --pull -t tmp . &&  docker run -d --name=tmp tmp \
+	docker container rm -f tmp && docker build --no-cache --pull -t tmp . &&  docker run -d --name=tmp tmp \
 	&& docker cp tmp:/home/lthn/cli/ build/ && docker stop tmp && docker container rm tmp
 
 .PHONY: test-daemon
 test-daemon:
-	build/letheand --data-dir=data/ --log-level=4
+	build/cli/letheand --data-dir=data/ --log-level=1 --testnet --seed-node  176.9.18.120:38772 --add-peer 148.251.194.180:38772
