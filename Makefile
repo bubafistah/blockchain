@@ -130,8 +130,8 @@ tags:
 
 .PHONY: docker
 docker:
-	docker build --no-cache --pull -t tp . &&  docker run -d --name=tp tp \
-	&& docker cp tp:/usr/local/bin build/ && docker stop tp && docker container rm tp
+	docker build --no-cache --pull -t tmp . &&  docker run -d --name=tmp tmp \
+	&& docker cp tmp:/home/lthn/cli/ build/ && docker stop tmp && docker container rm tmp
 
 .PHONY: test-daemon
 test-daemon:
