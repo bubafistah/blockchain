@@ -135,4 +135,4 @@ docker:
 
 .PHONY: test-daemon
 test-daemon:
-	build/cli/letheand --data-dir=data/ --log-level=1 --testnet --seed-node  176.9.18.120:38772 --add-peer 148.251.194.180:38772
+	build/cli/letheand --data-dir=data/ --log-level=1 --testnet --p2p-bind-ip 127.0.0.1  --add-exclusive-node 127.0.0.1:38772 --add-exclusive-node 176.9.18.120:38772

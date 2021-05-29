@@ -5,7 +5,7 @@ WORKDIR /home/lthn/src/chain
 COPY . .
 # make type to use, to change --build-arg RELEASE_TYPE=release-test
 ARG RELEASE_TYPE=release-static
-ARG BUILD_THREADS=5
+ARG BUILD_THREADS=1
 RUN rm -rf build && make -j${BUILD_THREADS} ${RELEASE_TYPE}
 
 # Build stage over, now we make the end image.
