@@ -36,6 +36,15 @@ Testnet:
     - docker cp release-3.3.0:/home/lthn/bin/chain $CI_PROJECT_DIR/artifacts
   only:
     - release-3.3.0
+  artifacts:
+    name: mac-x86_64
+    paths:
+      - artifacts/lethean-blockchain-export
+      - artifacts/lethean-blockchain-import
+      - artifacts/lethean-wallet-cli
+      - artifacts/lethean-wallet-rpc
+      - artifacts/lethean-wallet-vpn-rpc
+      - artifacts/letheand
 
 mac-x86_64:
   image: docker
