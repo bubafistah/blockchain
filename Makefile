@@ -133,6 +133,16 @@ docker:
 	docker container rm -f tmp && docker build --no-cache --pull -t tmp . &&  docker run -d --name=tmp tmp \
 	&& docker cp tmp:/home/lthn/cli/ build/ && docker stop tmp && docker container rm tmp
 
+.PHONY: docker
+testnet:
+	chmod +x .deploy/testnet.sh; \
+	.deploy/testnet.sh
+
+.PHONY: wallet
+wallet:
+
+	build/cli/lethean-wallet-cli --daemon-host=seed.lethean.io
+
 .PHONY: test-daemon
 test-daemon:
 	build/cli/letheand --data-dir=data/ --log-level=1 --testnet --p2p-bind-ip 127.0.0.1  --add-exclusive-node 127.0.0.1:38772 --add-exclusive-node 176.9.18.120:38772
