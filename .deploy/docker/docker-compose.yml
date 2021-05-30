@@ -1,0 +1,22 @@
+version: "3"
+services:
+  letheand:
+    env_file:
+      - .env
+    volumes:
+      - "chain:/home/lthn/data/chain"
+    ports:
+      - "38782:38782"
+      - "38772:38772"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:48782/json_rpc" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+    image: "lthn/chain:testnet"
+    build:
+      context: .
+      args:
+        - RELEASE_TYPE=release-static
+volumes:
+  chain:
