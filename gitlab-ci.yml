@@ -22,7 +22,7 @@ Docker Hub:
     - master
 
 Testnet:
-  stage: deploy
+  stage: build
   image: docker
   services:
     - name: docker:dind
