@@ -29,15 +29,17 @@ Testnet:
       command: [ "--experimental" ]
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  after_script:
+    - docker stop release-3.3.0
   script:
     - docker build --squash -t "lthn/chain:testnet" -f .deploy/docker/testnet.Dockerfile --build-arg RELEASE_TYPE=release-static .
     - docker push "lthn/chain:testnet"
     - docker run --name=release-3.3.0 -d lthn/chain:testnet
-    - docker cp release-3.3.0:/home/lthn/bin/chain $CI_PROJECT_DIR/artifacts
+    - docker cp release-3.3.0:/home/lthn/cli/testnet $CI_PROJECT_DIR/artifacts
   only:
     - release-3.3.0
   artifacts:
-    name: mac-x86_64
+    name: release-3.3.0
     paths:
       - artifacts/lethean-blockchain-export
       - artifacts/lethean-blockchain-import
