@@ -22,12 +22,12 @@ ENV CLI_DIR="/home/lthn/cli"
 ENV DATA_DIR="/home/lthn/data/testnet"
 ENV BASE_DIR="/home/lthn"
 ENV IMG_TAG="chain"
-ENV WALLET_DIR="${BASE_DIR}/wallet"
-ENV BIN_DIR="${BASE_DIR}/cli/testnet"
-ENV CONF_DIR="${BASE_DIR}/config/testnet"
-ENV LOG_DIR="${BASE_DIR}/log"
-ENV SRC_DIR="${BASE_DIR}/src/testnet"
-ENV DATA_DIR="${BASE_DIR}/data/testnet"
+ENV WALLET_DIR="${BASE_DIR}/wallet/${IMG_TAG}"
+ENV BIN_DIR="${BASE_DIR}/cli/${IMG_TAG}"
+ENV CONF_DIR="${BASE_DIR}/config/${IMG_TAG}"
+ENV LOG_DIR="${BASE_DIR}/log/${IMG_TAG}"
+ENV SRC_DIR="${BASE_DIR}/src/${IMG_TAG}"
+ENV DATA_DIR="${BASE_DIR}/data/${IMG_TAG}"
 
 RUN adduser --system --group lthn
 
