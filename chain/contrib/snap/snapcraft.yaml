@@ -1,0 +1,75 @@
+name: lethean
+version: 0.10.2-1
+summary: "lethean: the secure, private, untraceable cryptocurrency https://lethean.io"
+description: |
+    lethean is a private, secure, untraceable, decentralised digital currency.
+    You are your bank, you control your funds, and nobody can trace your transfers
+    unless you allow them to do so.
+grade: devel
+confinement: strict
+
+apps:
+    letheand:
+        daemon: forking
+        command: |
+          letheand-wrapper --detach --data-dir ${SNAP_COMMON} --config-file ${SNAP_USER_DATA}/etc/letheand.conf
+        plugs:
+            - network
+            - network-bind
+    lethean-wallet-rpc:
+        command: |
+          lethean-wallet-rpc --log-file ${SNAP_USER_DATA}
+        plugs:
+            - home
+            - network
+            - network-bind
+    lethean-wallet-cli:
+        command: |
+          lethean-wallet-cli --log-file ${SNAP_USER_DATA}
+        plugs:
+            - home
+            - network
+
+parts:
+    cmake-build:
+        plugin: cmake
+        configflags:
+            - -DBDB_STATIC=1
+            - -DUPNP_STATIC=1
+            - -DBoost_USE_STATIC_LIBS=1
+            - -DBoost_USE_STATIC_RUNTIME=1
+            - -DARCH=default
+        source: .
+        build-packages:
+            - gcc
+            - pkg-config
+            - libunbound-dev
+            - libevent-dev
+            - libboost-all-dev
+            - libdb-dev
+            - libunwind-dev
+            - libminiupnpc-dev
+            - libldns-dev
+            - libexpat1-dev
+            - bison
+            - doxygen
+            - graphviz
+        stage-packages:
+            - libminiupnpc10
+            - libunbound2
+            - libunwind8
+        prime:
+            - bin
+            - usr/lib/
+            - -usr/lib/gcc
+            - -usr/share
+
+    dist-files:
+        plugin: dump
+        source: .
+        organize:
+            contrib/snap/letheand.conf: etc/letheand.conf
+            contrib/snap/letheand-wrapper: bin/letheand-wrapper
+        prime:
+            - etc
+            - bin
