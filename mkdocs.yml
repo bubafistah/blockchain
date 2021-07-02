@@ -4,7 +4,7 @@ site_dir: public
 copyright: Copyright &copy; <a rel="noopener" href="https://lethean.io">Lethean VPN</a> - The Peoples Network.
 repo_url: https://gitlab.com/lthn.io/projects/sdk/build
 edit_uri: edit/master/docs/
-repo_name: lthn/build
+repo_name: lthn/chain
 
 theme:
   name: material
@@ -70,6 +70,12 @@ plugins:
   - git-revision-date-localized:
       fallback_to_build_date: true
       enable_creation_date: true
+  - minify:
+      minify_html: true
+      minify_js: true
+      htmlmin_opts:
+        remove_comments: true
+
 
 extra_css:
   - stylesheets/extra.css
