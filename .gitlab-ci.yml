@@ -1,0 +1,62 @@
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  image: lthn/build:lthn-chain-next
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+  services:
+    - name: docker:dind
+      command: [ "--experimental" ]
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker build --squash --cache-from $CI_REGISTRY_IMAGE:next -t $CI_REGISTRY_IMAGE:next -f .build/docker/chain-linux.Dockerfile chain
+    - docker push $CI_REGISTRY_IMAGE:next
+  rules:
+    - changes:
+        - "Dockerfile"
+        - "chain/**/*"
+
+
+test:
+  image: python:3.8-buster
+  before_script:
+    - pip install -r requirements.txt
+  stage: test
+  script:
+  - mkdocs build --strict --verbose --site-dir test
+  artifacts:
+    paths:
+    - test
+
+pages:
+  image: python:3.8-buster
+  variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  cache:
+    paths:
+      - ".cache/pip"
+      - "venv/"
+  before_script:
+    - python -V               # Print out python version for debugging
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+    - pip install -r requirements.txt
+    - pip install git+https://$protected_material_token@github.com/squidfunk/mkdocs-material-insiders.git
+  stage: deploy
+  script:
+    - mkdocs build --strict --verbose
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'next'
+      changes:
+        - "docs/**/*"
+        - "requirements.txt"
+        - "mkdocs.yml"
