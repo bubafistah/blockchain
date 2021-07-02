@@ -1,0 +1,24 @@
+[submodule "chain/external/unbound"]
+	path = chain/external/unbound
+	url = https://gitlab.com/lthn.io/projects/sdk/submodule.git
+	branch = unbound
+[submodule "chain/external/miniupnp"]
+	path = chain/external/miniupnp
+	url = https://gitlab.com/lthn.io/projects/sdk/submodule.git
+	branch = miniupnp
+[submodule "chain/external/rapidjson"]
+	path = chain/external/rapidjson
+	url = https://gitlab.com/lthn.io/projects/sdk/submodule.git
+	branch = rapidjson
+[submodule "chain/external/trezor-common"]
+	path = chain/external/trezor-common
+	url = https://gitlab.com/lthn.io/projects/sdk/submodule.git
+	branch = trezor-common
+[submodule "chain/external/randomx"]
+	path = chain/external/randomx
+	url = https://gitlab.com/lthn.io/projects/sdk/submodule.git
+	branch = randomx
+[submodule "chain/external/supercop"]
+	path = chain/external/supercop
+	url = https://gitlab.com/lthn.io/projects/sdk/submodule.git
+	branch = supercop
