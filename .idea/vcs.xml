@@ -2,5 +2,11 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/miniupnp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/randomx" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/rapidjson" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/supercop" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/trezor-common" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/unbound" vcs="Git" />
   </component>
 </project>
