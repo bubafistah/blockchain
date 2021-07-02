@@ -1,10 +1,50 @@
-.PHONY: all docs docs-edit docs-setup help
+.PHONY: all docs docs-edit docs-setup help docker-build-win64
+
 CODE_DIR = chain
 
 all: help
 
-build: ## Compile Lethean Blockchain
-	$(MAKE) -C $(CODE_DIR)
+release: ## Compile Lethean Blockchain
+	$(MAKE) -C $(CODE_DIR) release
+
+clean: ## Compile Lethean Blockchain
+	$(MAKE) -C $(CODE_DIR) clean && rm -rf public
+
+linux-32: ## Compiles Linux 32 static executables
+	$(MAKE) -C $(CODE_DIR) depends target=i686-linux-gnu
+
+linux-64: ## Compiles Linux 64 static executables
+	$(MAKE) -C $(CODE_DIR) depends target=x86_64-linux-gnu
+
+windows-32: ## Compiles Windows 32 static executables
+	$(MAKE) -C $(CODE_DIR) depends target=i686-w64-mingw32
+
+windows-64: ## Compiles Windows 64 static executables
+	$(MAKE) -C $(CODE_DIR) depends target=x86_64-w64-mingw32
+
+macos-intel: ## MacOS Intel executables
+	$(MAKE) -C $(CODE_DIR) depends target=x86_64-apple-darwin11
+
+arm-7: ## Arm7 32 executables
+	$(MAKE) -C $(CODE_DIR) depends target=arm-linux-gnueabihf
+
+arm-8: ## Arm8 64 executables
+	$(MAKE) -C $(CODE_DIR) depends target=aarch64-linux-gnu
+
+risc-v64: ## RISC V64 executables
+	$(MAKE) -C $(CODE_DIR) depends target=riscv64-linux-gnu
+
+freebsd-64: ## FreeBSD executables
+	$(MAKE) -C $(CODE_DIR) depends target=x86_64-unknown-freebsd
+
+android-32: ## Android 32 executables
+	$(MAKE) -C $(CODE_DIR) depends target=arm-linux-android
+
+android-64: ## Android 64 executables
+	$(MAKE) -C $(CODE_DIR) depends target=aarch64-linux-android
+
+cc-windows-deps:
+	docker build -t lthn/build:chain-cc-windows -f .build/image/windows.Dockerfile .
 
 docs: ## Documentation website, placed in ./public
 	mkdocs build

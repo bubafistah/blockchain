@@ -1,0 +1,9 @@
+public
+venv
+docs
+.build
+chain/build
+chain/contrib/depends/built
+chain/contrib/depends/sources
+chain/contrib/depends/work
+chain/contrib/depends/x86_64*
