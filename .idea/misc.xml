@@ -3,6 +3,14 @@
   <component name="CMakeWorkspace">
     <contentRoot DIR="$PROJECT_DIR$" />
   </component>
+  <component name="CidrRootsConfiguration">
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/chain/build" />
+      <file path="$PROJECT_DIR$/chain/contrib/depends/built" />
+      <file path="$PROJECT_DIR$/chain/contrib/depends/sources" />
+      <file path="$PROJECT_DIR$/chain/contrib/depends/work" />
+    </excludeRoots>
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="MakefileSettings">
     <option name="linkedExternalProjectsSettings">

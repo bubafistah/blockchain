@@ -1,4 +1,5 @@
-.PHONY: all docs docs-edit docs-setup help docker-build-win64
+.PHONY: all docs docs-edit docs-setup help static release static clean linux-32 linux-64 windows-32 windows-64
+.PHONY: macos-intel arm-7 arm-8 risc-v64 freebsd-64 android-32 android-64
 
 CODE_DIR = chain
 
@@ -6,6 +7,9 @@ all: help
 
 release: ## Compile Lethean Blockchain
 	$(MAKE) -C $(CODE_DIR) release
+
+static:
+	$(MAKE) -C $(CODE_DIR) release-static
 
 clean: ## Compile Lethean Blockchain
 	$(MAKE) -C $(CODE_DIR) clean && rm -rf public

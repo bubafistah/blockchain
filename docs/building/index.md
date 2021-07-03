@@ -29,6 +29,11 @@ By default, in either dynamically or statically linked builds, binaries target t
 
 # Cross Compiling
 
+```commandline
+gcc-riscv64-linux-gnu g++-riscv64-linux-gnu 
+gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
+```
 You can also cross-compile static binaries on Linux for Windows and macOS with the `depends` system.
 
 * ```make depends target=x86_64-linux-gnu``` for 64-bit linux binaries.
