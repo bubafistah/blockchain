@@ -28,6 +28,32 @@ build:
         - "Dockerfile"
         - "chain/**/*"
 
+build:linux64:
+  stage: build
+  tags:
+    - next
+  variables:
+    NPROC: "8"
+    IMG_TAG: "linux-64"
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  after_script:
+    - docker stop release-static
+  script:
+    - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/linux.Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
+    - docker run --name=release-static -d $CI_REGISTRY_IMAGE:$IMG_TAG
+    - docker cp release-static:/home/lthn/bin/chain $CI_PROJECT_DIR/artifacts
+    - (cd artifacts; tar -cvzf ../linux-amd64.tar.gz *)
+  artifacts:
+    name: Linux 64
+    expose_as: "Linux amd64"
+    paths:
+      - linux-amd64.tar.gz
+  rules:
+    - changes:
+        - .build/image/linux.Dockerfile
+        - "chain/**/*"
 
 test:
   image: python:3.8-buster
