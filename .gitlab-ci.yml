@@ -6,21 +6,32 @@ stages:
 build:
   stage: build
   image: docker
+  tags:
+    - next
   variables:
     DOCKER_HOST: tcp://docker:2375
+    NPROC: 8
+    IMG_TAG: next
   services:
     - name: docker:dind
       command: [ "--experimental" ]
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  after_script:
+    - docker stop release-static
   script:
-    - docker build --squash --cache-from $CI_REGISTRY_IMAGE:next -t $CI_REGISTRY_IMAGE:next .
-    - docker push $CI_REGISTRY_IMAGE:next
+    - docker build --squash --cache-from $CI_REGISTRY_IMAGE:$IMG_TAG -t $CI_REGISTRY_IMAGE:$IMG_TAG .
+    - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
+    - docker run --name=release-static -d $CI_REGISTRY_IMAGE:$IMG_TAG
+    - docker cp release-static:/home/lthn/bin/chain $CI_PROJECT_DIR/artifacts
+  artifacts:
+    name: Linux 64
+    paths:
+      - artifacts/*
   rules:
     - changes:
         - "Dockerfile"
         - "chain/**/*"
-        - ".gitlab-ci.yml"
 
 
 test:

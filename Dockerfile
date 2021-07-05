@@ -14,6 +14,7 @@ RUN set -ex && \
         else make -j$NPROC static ; \
     fi
 
+
 FROM ubuntu:16.04 as final
 
 ENV BASE_DIR="/home/lthn"
