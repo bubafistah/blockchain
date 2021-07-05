@@ -20,6 +20,7 @@ build:
     - changes:
         - "Dockerfile"
         - "chain/**/*"
+        - ".gitlab-ci.yml"
 
 
 test:
