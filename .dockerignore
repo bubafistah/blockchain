@@ -1,4 +1,3 @@
-public
 venv
 docs
 .build
@@ -8,6 +7,12 @@ chain/contrib/depends/sources
 chain/contrib/depends/work
 chain/contrib/depends/x86_64*
 chain/contrib/depends/riscv*
+chain/contrib/depends/SDKs/
+chain/contrib/depends/config.site
+chain/contrib/depends/i686*
+chain/contrib/depends/mips*
+chain/contrib/depends/arm*
+chain/contrib/depends/aarch64*
 chain/contrib/brew
 chain/external/randomx
 chain/external/rapidjson

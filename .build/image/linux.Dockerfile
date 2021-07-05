@@ -13,4 +13,8 @@ RUN set -ex && \
     if [ -z "$NPROC" ] ; \
         then make -j$(nproc) static ; \
         else make -j$NPROC static ; \
-    fi
+    fi && \
+    (cd chain/build/release/bin && tar -cvzf linux-amd64.tar.gz *)
+
+FROM scratch
+COPY --from=builder /home/lthn/src/chain/build/release/bin/ /
