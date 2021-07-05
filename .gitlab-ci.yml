@@ -9,7 +9,7 @@ build:
   tags:
     - next
   variables:
-    DOCKER_HOST:
+    DOCKER_HOST: tcp://docker:2375
     NPROC: "8"
     IMG_TAG: "next"
   services:
