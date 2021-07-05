@@ -5,19 +5,15 @@ stages:
 
 build:
   stage: build
-  image: docker
   tags:
     - next
   variables:
     NPROC: "8"
     IMG_TAG: "next"
-  services:
-    - name: docker:dind
-      command: [ "--experimental" ]
   after_script:
     - docker stop release-static
   script:
-    - docker build --squash --cache-from $CI_REGISTRY_IMAGE:$IMG_TAG -t $CI_REGISTRY_IMAGE:$IMG_TAG .
+    - docker build --squash --cache-from --build-arg NPROC=8 $CI_REGISTRY_IMAGE:$IMG_TAG -t $CI_REGISTRY_IMAGE:$IMG_TAG .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker run --name=release-static -d $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker cp release-static:/home/lthn/bin/chain $CI_PROJECT_DIR/artifacts
