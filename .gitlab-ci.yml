@@ -49,7 +49,6 @@ build:linux64:
     name: Linux 64
     expose_as: "Linux amd64"
     paths:
-      - linux-amd64.tar.gz
       - letheand
       - lethean-wallet-rpc
       - lethean-wallet-cli

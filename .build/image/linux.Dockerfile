@@ -16,5 +16,5 @@ RUN set -ex && \
     fi && \
     (cd chain/build/release/bin && tar -cvzf linux-amd64.tar.gz *)
 
-FROM scratch
+FROM alpine
 COPY --from=builder /home/lthn/src/chain/build/release/bin/ /
