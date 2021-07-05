@@ -1,16 +1,17 @@
-FROM lthn/build:lthn-chain-next as builder
+FROM lthn/build:lthn-compile-base as builder
 
-WORKDIR /src
+WORKDIR /home/lthn/src
+
 COPY . .
 
 ENV USE_SINGLE_BUILDDIR=1
-ARG NPROC
+ARG NPROC=1
 RUN set -ex && \
-    git submodule init && git submodule update && \
-    rm -rf build && \
+    git submodule init && git submodule update --depth 1 && \
+    rm -rf chain/build && \
     if [ -z "$NPROC" ] ; \
-    then make -j$(nproc) release-static ; \
-    else make -j$NPROC release-static ; \
+        then make -j$(nproc) static ; \
+        else make -j$NPROC static ; \
     fi
 
 FROM ubuntu:16.04 as final

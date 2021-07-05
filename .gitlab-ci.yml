@@ -5,7 +5,7 @@ stages:
 
 build:
   stage: build
-  image: lthn/build:lthn-chain-next
+  image: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
   services:
@@ -14,7 +14,7 @@ build:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - docker build --squash --cache-from $CI_REGISTRY_IMAGE:next -t $CI_REGISTRY_IMAGE:next -f .build/docker/chain-linux.Dockerfile chain
+    - docker build --squash --cache-from $CI_REGISTRY_IMAGE:next -t $CI_REGISTRY_IMAGE:next chain
     - docker push $CI_REGISTRY_IMAGE:next
   rules:
     - changes:
