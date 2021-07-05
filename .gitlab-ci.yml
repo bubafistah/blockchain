@@ -15,7 +15,7 @@ build:
   after_script:
     - docker stop release-static
   script:
-    - docker build --squash --build-arg NPROC=8 --cache-from $CI_REGISTRY_IMAGE:$IMG_TAG -t $CI_REGISTRY_IMAGE:$IMG_TAG .
+    - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker run --name=release-static -d $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker cp release-static:/home/lthn/bin/chain $CI_PROJECT_DIR/artifacts
