@@ -9,14 +9,12 @@ build:
   tags:
     - next
   variables:
-    DOCKER_HOST: tcp://docker:2375
-    NPROC: 8
-    IMG_TAG: next
+    DOCKER_HOST:
+    NPROC: "8"
+    IMG_TAG: "next"
   services:
     - name: docker:dind
       command: [ "--experimental" ]
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   after_script:
     - docker stop release-static
   script:
