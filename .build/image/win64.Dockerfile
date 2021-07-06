@@ -17,4 +17,4 @@ RUN set -ex && \
     (cd /lethean/chain/release/bin && tar -cvzf lethean-chain-win64.tar.gz *)
 
 FROM alpine
-COPY --from=builder /lethean/chain/build/bin/ /
+COPY --from=builder /lethean/chain/build/release/bin/ /
