@@ -499,7 +499,7 @@ else (HIDAPI_FOUND)
 endif()
 
 # Trezor support check
-include(CheckTrezor)
+#include(CheckTrezor)
 
 # As of OpenBSD 6.8, -march=<anything> breaks the build
 function(set_default_arch)

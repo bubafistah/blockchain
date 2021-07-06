@@ -63,10 +63,50 @@ build:linux64:
       - lethean-blockchain-export
       - lethean-blockchain-depth
       - lethean-blockchain-ancestry
-
   rules:
     - changes:
         - .build/image/linux.Dockerfile
+        - "chain/**/*"
+
+build:win64:
+  stage: build
+  tags:
+    - next
+  variables:
+    NPROC: "8"
+    IMG_TAG: "win64"
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  after_script:
+    - docker stop release-win64
+    - docker container rm release-win64
+  script:
+    - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/win64.Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
+    - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
+    - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
+  artifacts:
+    name: Windows 64
+    expose_as: "Windows 64"
+    paths:
+      - lethean-chain-win64.tar.gz
+      - letheand.exe
+      - lethean-wallet-rpc.exe
+      - lethean-wallet-cli.exe
+      - lethean-gen-trusted-multisig.exe
+      - lethean-gen-ssl-cert.exe
+      - lethean-blockchain-usage.exe
+      - lethean-blockchain-stats.exe
+      - lethean-blockchain-prune-known-spent-data.exe
+      - lethean-blockchain-prune.exe
+      - lethean-blockchain-mark-spent-outputs.exe
+      - lethean-blockchain-import.exe
+      - lethean-blockchain-export.exe
+      - lethean-blockchain-depth.exe
+      - lethean-blockchain-ancestry.exe
+  rules:
+    - changes:
+        - .build/image/win64.Dockerfile
         - "chain/**/*"
 
 test:
