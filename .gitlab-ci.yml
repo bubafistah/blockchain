@@ -78,18 +78,18 @@ build:win64:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   after_script:
-    - docker stop release-win64
-    - docker container rm release-win64
+    - docker stop release-$IMG_TAG
+    - docker container rm release-$IMG_TAG
   script:
     - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/win64.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
   artifacts:
-    name: Windows 64
-    expose_as: "Windows 64"
+    name: Windows x86_64
+    expose_as: "Windows x86_64"
     paths:
-      - lethean-chain-win64.tar.gz
+      - lethean-chain-windows-x86_64.tar.gz
       - letheand.exe
       - lethean-wallet-rpc.exe
       - lethean-wallet-cli.exe
@@ -107,6 +107,47 @@ build:win64:
   rules:
     - changes:
         - .build/image/win64.Dockerfile
+        - "chain/**/*"
+
+build:freebsd64:
+  stage: build
+  tags:
+    - next
+  variables:
+    NPROC: "8"
+    IMG_TAG: "freebsd-64"
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  after_script:
+    - docker stop release-$IMG_TAG
+    - docker container rm release-$IMG_TAG
+  script:
+    - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/freebsd64.Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
+    - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
+    - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
+  artifacts:
+    name: FreeBSD x86_64
+    expose_as: "FreeBSD x86_64"
+    paths:
+      - lethean-chain-freebsd-x86_64.tar.gz
+      - letheand
+      - lethean-wallet-rpc
+      - lethean-wallet-cli
+      - lethean-gen-trusted-multisig
+      - lethean-gen-ssl-cert
+      - lethean-blockchain-usage
+      - lethean-blockchain-stats
+      - lethean-blockchain-prune-known-spent-data
+      - lethean-blockchain-prune
+      - lethean-blockchain-mark-spent-outputs
+      - lethean-blockchain-import
+      - lethean-blockchain-export
+      - lethean-blockchain-depth
+      - lethean-blockchain-ancestry
+  rules:
+    - changes:
+        - .build/image/freebsd64.Dockerfile
         - "chain/**/*"
 
 test:
