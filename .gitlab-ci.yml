@@ -38,13 +38,13 @@ build:linux64:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   after_script:
-    - docker stop release-static
-    - docker container rm release-static
+    - docker stop release-$IMG_TAG
+    - docker container rm release-$IMG_TAG
   script:
     - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/linux.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker run --name=release-static -d $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker cp release-static:/ $CI_PROJECT_DIR/
+    - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
+    - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
   artifacts:
     name: Linux 64
     expose_as: "Linux amd64"
