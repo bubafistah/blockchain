@@ -14,7 +14,7 @@ RUN set -ex && \
         then make depends target=x86_64-w64-mingw32 tag=win-x64 -j$(nproc) ; \
         else make depends target=x86_64-w64-mingw32 tag=win-x64 -j$NPROC ; \
     fi && \
-    (cd /lethean/chain/build/x86_64-w64-mingw32/release-x86_64-w64-mingw32/bin && tar -cvzf lethean-chain-win64.tar.gz *)
+    (cd /lethean/chain/release/bin && tar -cvzf lethean-chain-win64.tar.gz *)
 
 FROM alpine
-COPY --from=builder /lethean/chain/build/x86_64-w64-mingw32/release-x86_64-w64-mingw32/bin/ /
+COPY --from=builder /lethean/chain/build/bin/ /
