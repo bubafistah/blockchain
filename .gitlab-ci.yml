@@ -164,6 +164,47 @@ build:freebsd64:
         - .build/image/freebsd64.Dockerfile
         - "chain/**/*"
 
+build:macos-intel:
+  stage: build
+  tags:
+    - next
+  variables:
+    NPROC: "8"
+    IMG_TAG: "macos-intel"
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  after_script:
+    - docker stop release-$IMG_TAG
+    - docker container rm release-$IMG_TAG
+  script:
+    - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/macos-intel.Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
+    - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
+    - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
+  artifacts:
+    name: MacOS Intel
+    expose_as: "MacOS Intel"
+    paths:
+      - lethean-chain-macos-intel.tar.gz
+      - letheand
+      - lethean-wallet-rpc
+      - lethean-wallet-cli
+      - lethean-gen-trusted-multisig
+      - lethean-gen-ssl-cert
+      - lethean-blockchain-usage
+      - lethean-blockchain-stats
+      - lethean-blockchain-prune-known-spent-data
+      - lethean-blockchain-prune
+      - lethean-blockchain-mark-spent-outputs
+      - lethean-blockchain-import
+      - lethean-blockchain-export
+      - lethean-blockchain-depth
+      - lethean-blockchain-ancestry
+  rules:
+    - changes:
+        - .build/image/freebsd64.Dockerfile
+        - "chain/**/*"
+
 test:
   image: python:3.8-buster
   before_script:
