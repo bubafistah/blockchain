@@ -202,7 +202,7 @@ build:macos-intel:
       - lethean-blockchain-ancestry
   rules:
     - changes:
-        - .build/image/freebsd64.Dockerfile
+        - .build/image/macos-intel.Dockerfile
         - "chain/**/*"
 
 test:
