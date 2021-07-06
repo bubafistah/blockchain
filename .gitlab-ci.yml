@@ -14,15 +14,29 @@ build:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   after_script:
     - docker stop release-static
+    - docker container rm release-static
   script:
     - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker run --name=release-static -d $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker cp release-static:/home/lthn/bin/chain $CI_PROJECT_DIR/artifacts
+    - docker cp release-static:/home/lthn/bin/chain $CI_PROJECT_DIR/
   artifacts:
     name: Linux 64
     paths:
-      - artifacts/*
+      - letheand
+      - lethean-wallet-rpc
+      - lethean-wallet-cli
+      - lethean-gen-trusted-multisig
+      - lethean-gen-ssl-cert
+      - lethean-blockchain-usage
+      - lethean-blockchain-stats
+      - lethean-blockchain-prune-known-spent-data
+      - lethean-blockchain-prune
+      - lethean-blockchain-mark-spent-outputs
+      - lethean-blockchain-import
+      - lethean-blockchain-export
+      - lethean-blockchain-depth
+      - lethean-blockchain-ancestry
   rules:
     - changes:
         - "Dockerfile"
