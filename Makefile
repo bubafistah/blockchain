@@ -1,4 +1,4 @@
-.PHONY: all docs docs-edit docs-setup help static release static clean linux-32 linux-64 windows-32 windows-64
+.PHONY: help static release static clean linux-32 linux-64 windows-32 windows-64
 .PHONY: macos-intel arm-7 arm-8 risc-v64 freebsd-64 android-32 android-64
 
 CODE_DIR = chain
@@ -46,22 +46,6 @@ android-32: ## Android 32 executables
 
 android-64: ## Android 64 executables
 	$(MAKE) -C $(CODE_DIR) depends target=aarch64-linux-android
-
-cc-windows-deps:
-	docker build -t lthn/build:chain-cc-windows -f .build/image/windows.Dockerfile .
-
-docs: ## Documentation website, placed in ./public
-	mkdocs build
-
-docs-edit: ## Documentation webserver using local files with hot reload
-	mkdocs serve
-
-.ONESHELL:
-docs-setup: ## Creates python virtual env and installs mkdocs
-	python -m venv venv
-	source ./venv/bin/activate
-	pip install mkdocs-material
-	pip install -r requirements.txt
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36mmake %-30s\033[0m %s\n", $$1, $$2}'
