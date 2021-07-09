@@ -1,45 +1,95 @@
-{% extends "base.html" %}
+{% import "partials/language.html" as lang with context %}
+<!-- Canonical -->
 
-{% block extrahead %}
-  {% set title = config.site_name %}
-  {% if page and page.meta and page.meta.title %}
-    {% set title = title ~ " - " ~ page.meta.title %}
-  {% elif page and page.title and not page.is_homepage %}
-    {% set title = title ~ " - " ~ page.title | striptags %}
-  {% endif %}
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="{{ title }}" />
-  <meta property="og:description" content="{{ config.site_description }}" />
-  <meta property="og:url" content="{{ page.canonical_url }}" />
-  <meta property="og:image" content="<url>" />
-  <meta property="og:image:type" content="image/png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="https://lethean.io" />
-  <meta name="twitter:creator" content="LetheanVPN" />
-  <meta name="twitter:title" content="{{ title }}" />
-  <meta name="twitter:description" content="{{ config.site_description }}" />
-  <meta name="twitter:image" content="<url>" />
-{% endblock %}
+<!-- Main area -->
+<main class="md-main" data-md-component="main">
+    <div class="md-main__inner md-grid">
 
-{% block analytics %}
-<!-- Start Open Web Analytics Tracker -->
-<script type="text/javascript">
-  //<![CDATA[
-  var owa_baseUrl = 'https://owa.lthn.io/';
-  var owa_cmds = owa_cmds || [];
-  owa_cmds.push(['setSiteId', '6eb8ab41302eda142841ab954d6b3c1a']);
-  owa_cmds.push(['trackPageView']);
-  owa_cmds.push(['trackClicks']);
+        {% block site_nav %}
 
-  (function() {
-    var _owa = document.createElement('script'); _owa.type = 'text/javascript'; _owa.async = true;
-    owa_baseUrl = ('https:' == document.location.protocol ? window.owa_baseSecUrl || owa_baseUrl.replace(/http:/, 'https:') : owa_baseUrl );
-    _owa.src = owa_baseUrl + 'modules/base/js/owa.tracker-combined-min.js';
-    var _owa_s = document.getElementsByTagName('script')[0]; _owa_s.parentNode.insertBefore(_owa, _owa_s);
-  }());
-  //]]>
-</script>
-<!-- End Open Web Analytics Code -->
-{% endblock %}
+        <!-- Main navigation -->
+        {% if nav %}
+        {% if page and page.meta and page.meta.hide %}
+        {% set hidden = "hidden" if "navigation" in page.meta.hide %}
+        {% endif %}
+        <div
+                class="md-sidebar md-sidebar--primary"
+                data-md-component="sidebar"
+                data-md-type="navigation"
+                {{ hidden }}
+        >
+            <div class="md-sidebar__scrollwrap">
+                <div class="md-sidebar__inner">
+                    {% include "partials/nav.html" %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Table of contents -->
+        {% if page.toc and not "toc.integrate" in features %}
+        {% if page and page.meta and page.meta.hide %}
+        {% set hidden = "hidden" if "toc" in page.meta.hide %}
+        {% endif %}
+        <div
+                class="md-sidebar md-sidebar--secondary"
+                data-md-component="sidebar"
+                data-md-type="toc"
+                {{ hidden }}
+        >
+            <div class="md-sidebar__scrollwrap">
+                <div class="md-sidebar__inner">
+                    {% include "partials/toc.html" %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endblock %}
+
+        <!-- Article -->
+        <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+
+                <!-- Content -->
+                {% block content %}
+
+                <!-- Edit button -->
+                {% if page.edit_url %}
+                <a
+                        href="{{ page.edit_url }}"
+                        title="{{ lang.t('edit.link.title') }}"
+                        class="md-content__button md-icon"
+                >
+                    {% include ".icons/material/pencil.svg" %}
+                </a>
+                {% endif %}
+
+                <!--
+                  Hack: check whether the content contains a h1 headline. If it
+                  doesn't, the page title (or respectively site name) is used
+                  as the main headline.
+                -->
+                {% if not "\x3ch1" in page.content %}
+                <h1>{{ page.title | d(config.site_name, true)}}</h1>
+                {% endif %}
+
+                <!-- Markdown content -->
+                {{ page.content }}
+
+                <!-- Last update of source file -->
+                {% if page and page.meta %}
+                {% if page.meta.git_revision_date_localized or
+                page.meta.revision_date
+                %}
+                {% include "partials/source-file.html" %}
+                {% endif %}
+                {% endif %}
+                {% endblock %}
+
+            </article>
+        </div>
+    </div>
+
+
+</main>
+
