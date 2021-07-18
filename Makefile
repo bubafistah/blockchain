@@ -1,9 +1,13 @@
-.PHONY: help static release static clean linux-32 linux-64 windows-32 windows-64
+.PHONY: help static release static clean linux-32 linux-64 windows-32 windows-64 test
 .PHONY: macos-intel arm-7 arm-8 risc-v64 freebsd-64 android-32 android-64
 
 CODE_DIR = chain
 
 all: help
+
+test: ## Compile Lethean Blockchain
+	chmod +x chain/build/release/bin/letheand
+	chain/build/release/bin/letheand --log-level=4
 
 release: ## Compile Lethean Blockchain
 	$(MAKE) -C $(CODE_DIR) release
