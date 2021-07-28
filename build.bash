@@ -62,6 +62,9 @@ configureHostSettings() {
     elif [ "${archType}" = "arm64" ]; then
       echo "${archType}"
       archType="arm64"
+    elif [ "${archType}" = "aarch64" ]; then
+      echo "${archType}"
+      archType="aarch64"
     else
       echo "Unknown architecture: ${archType} on ${osVersion}, also, I dont know why you would ever see this error."
       echo "Please report it! contact@lethean.io or https://discord.lt.hn"
