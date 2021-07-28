@@ -3,7 +3,7 @@
 if [ ! -f "$SRC_DIR/openssl-${OPENSSL_VERSION}.tar.gz" ]; then
   cd "${SRC_DIR}" &&
   curl -s -O "https://github.com/openssl/openssl/archive/refs/tags/OpenSSL_${OPENSSL_VERSION}.zip" &&
-    echo "${OPENSSL_HASH}  OpenSSL-${OPENSSL_VERSION}.tar.gz" | sha256sum -c
+    echo "${OPENSSL_HASH}  OpenSSL-${OPENSSL_VERSION}.zip" | sha256sum -c
 fi
 
 if [ ! -d "$OPENSSL_INSTALL_DIR_AMD64" ] && [ -f "$SRC_DIR/Openssl-${OPENSSL_VERSION}.zip" ]; then
