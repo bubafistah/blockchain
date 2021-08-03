@@ -62,7 +62,7 @@ MacOS:
       - build/libs/
     policy: pull-push
 
-Pi4:
+Pi4(armv8):
   image: lthn/build:lthn-wallet-linux
   stage: build
   interruptible: true
@@ -75,9 +75,37 @@ Pi4:
     - cp build/release/rasbian-armv8.tar.gz ./
   artifacts:
     name: lethean-chain-rasbian-armv8
-    expose_as: 'Pi 4 Arm64'
+    expose_as: 'Pi 4 ARM64'
     paths:
       - rasbian-armv8.tar.gz
+  cache:
+    key: $CI_COMMIT_REF_SLUG
+    paths:
+      - build/libs/
+    policy: pull-push
+
+Pi4(aarch64):
+  # image: lthn/build:lthn-wallet-linux Not aarch64
+  image: ubuntu
+  stage: build
+  interruptible: true
+  only:
+    - main
+  tags:
+    - pi4
+  script:
+    - apt install -y build-essential cmake pkg-config libboost-all-dev libssl-dev libzmq3-dev \
+      libunbound-dev libsodium-dev libunwind8-dev liblzma-dev libreadline6-dev \
+      libldns-dev libexpat1-dev doxygen graphviz libpgm-dev qttools5-dev-tools \
+      libhidapi-dev libusb-1.0-0-dev libprotobuf-dev protobuf-compiler libudev-dev \
+      ca-certificates      
+    - make
+    - cp build/release/ubuntu-aarch64.tar.gz ./
+  artifacts:
+    name: lethean-chain-ubuntu-aarch64
+    expose_as: 'Pi 4 AARCH64'
+    paths:
+      - ubuntu-aarch64.tar.gz
   cache:
     key: $CI_COMMIT_REF_SLUG
     paths:
