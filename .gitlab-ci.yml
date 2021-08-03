@@ -89,8 +89,8 @@ Pi4(aarch64):
   image: ubuntu
   stage: build
   interruptible: true
-  only:
-    - main
+  #only:
+  #  - main
   tags:
     - pi4
   script:
@@ -116,6 +116,8 @@ GNU Linux:
   image: lthn/build:lthn-wallet-linux
   stage: build
   interruptible: true
+  only: 
+    - main
   script:
     - make release-static-linux-x86_64
     - cp build/release/linux-x86_64.tar.gz ./
