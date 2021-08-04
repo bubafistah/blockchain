@@ -3,10 +3,15 @@ stages:
   - test
   - deploy
 
+
 build:
   stage: build
   variables:
     IMG_TAG: "next"
+  image: docker
+  services:
+    - name: docker:dind
+      command: [ "--experimental" ]
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   after_script:
@@ -41,6 +46,10 @@ build:
 
 build:linux64:
   stage: build
+  image: docker
+  services:
+    - name: docker:dind
+      command: [ "--experimental" ]
   variables:
     IMG_TAG: "linux-64"
   before_script:
@@ -78,6 +87,10 @@ build:linux64:
 
 build:win64:
   stage: build
+  image: docker
+  services:
+    - name: docker:dind
+      command: [ "--experimental" ]
   variables:
     IMG_TAG: "win64"
   before_script:
@@ -116,6 +129,10 @@ build:win64:
 
 build:freebsd64:
   stage: build
+  image: docker
+  services:
+    - name: docker:dind
+      command: [ "--experimental" ]
   variables:
     IMG_TAG: "freebsd-64"
   before_script:
@@ -154,6 +171,10 @@ build:freebsd64:
 
 build:macos-intel:
   stage: build
+  image: docker
+  services:
+    - name: docker:dind
+      command: [ "--experimental" ]
   variables:
     IMG_TAG: "macos-intel"
   before_script:
@@ -192,6 +213,10 @@ build:macos-intel:
 
 build:riscv64:
   stage: build
+  image: docker
+  services:
+    - name: docker:dind
+      command: [ "--experimental" ]
   variables:
     IMG_TAG: "riscv64"
   before_script:
@@ -230,6 +255,10 @@ build:riscv64:
 
 build:armv7:
   stage: build
+  image: docker
+  services:
+    - name: docker:dind
+      command: [ "--experimental" ]
   variables:
     IMG_TAG: "armv7"
   before_script:
@@ -268,6 +297,10 @@ build:armv7:
 
 build:armv8:
   stage: build
+  image: docker
+  services:
+    - name: docker:dind
+      command: [ "--experimental" ]
   variables:
     IMG_TAG: "armv8"
   before_script:
