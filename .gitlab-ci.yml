@@ -5,10 +5,7 @@ stages:
 
 build:
   stage: build
-  tags:
-    - next
   variables:
-    NPROC: "8"
     IMG_TAG: "next"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -16,7 +13,7 @@ build:
     - docker stop release-static
     - docker container rm release-static
   script:
-    - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG .
+    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker run --name=release-static -d $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker cp release-static:/home/lthn/bin/chain $CI_PROJECT_DIR/
@@ -44,10 +41,7 @@ build:
 
 build:linux64:
   stage: build
-  tags:
-    - next
   variables:
-    NPROC: "8"
     IMG_TAG: "linux-64"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -55,7 +49,7 @@ build:linux64:
     - docker stop release-$IMG_TAG
     - docker container rm release-$IMG_TAG
   script:
-    - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/linux.Dockerfile .
+    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/linux.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
@@ -84,10 +78,7 @@ build:linux64:
 
 build:win64:
   stage: build
-  tags:
-    - next
   variables:
-    NPROC: "8"
     IMG_TAG: "win64"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -95,7 +86,7 @@ build:win64:
     - docker stop release-$IMG_TAG
     - docker container rm release-$IMG_TAG
   script:
-    - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/win64.Dockerfile .
+    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/win64.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
@@ -125,10 +116,7 @@ build:win64:
 
 build:freebsd64:
   stage: build
-  tags:
-    - next
   variables:
-    NPROC: "8"
     IMG_TAG: "freebsd-64"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -136,7 +124,7 @@ build:freebsd64:
     - docker stop release-$IMG_TAG
     - docker container rm release-$IMG_TAG
   script:
-    - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/freebsd64.Dockerfile .
+    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/freebsd64.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
@@ -166,10 +154,7 @@ build:freebsd64:
 
 build:macos-intel:
   stage: build
-  tags:
-    - next
   variables:
-    NPROC: "8"
     IMG_TAG: "macos-intel"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -177,7 +162,7 @@ build:macos-intel:
     - docker stop release-$IMG_TAG
     - docker container rm release-$IMG_TAG
   script:
-    - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/macos-intel.Dockerfile .
+    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/macos-intel.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
@@ -207,10 +192,7 @@ build:macos-intel:
 
 build:riscv64:
   stage: build
-  tags:
-    - next
   variables:
-    NPROC: "8"
     IMG_TAG: "riscv64"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -218,7 +200,7 @@ build:riscv64:
     - docker stop release-$IMG_TAG
     - docker container rm release-$IMG_TAG
   script:
-    - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/riscv64.Dockerfile .
+    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/riscv64.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
@@ -248,10 +230,7 @@ build:riscv64:
 
 build:armv7:
   stage: build
-  tags:
-    - next
   variables:
-    NPROC: "8"
     IMG_TAG: "armv7"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -259,7 +238,7 @@ build:armv7:
     - docker stop release-$IMG_TAG
     - docker container rm release-$IMG_TAG
   script:
-    - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/armv7.Dockerfile .
+    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/armv7.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
@@ -289,10 +268,7 @@ build:armv7:
 
 build:armv8:
   stage: build
-  tags:
-    - next
   variables:
-    NPROC: "8"
     IMG_TAG: "armv8"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -300,7 +276,7 @@ build:armv8:
     - docker stop release-$IMG_TAG
     - docker container rm release-$IMG_TAG
   script:
-    - docker build --squash --build-arg NPROC=8 --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/armv8.Dockerfile .
+    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/armv8.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
     - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
