@@ -1,30 +1,34 @@
 FROM lthn/build:lthn-compile-base as builder
 
-WORKDIR /lethean
+WORKDIR /home/lthn/chain/src
+WORKDIR /home/lthn/chain/src
 
 COPY . .
-WORKDIR /lethean/chain
+WORKDIR /home/lthn/chain/src/chain
+
 
 ENV USE_SINGLE_BUILDDIR=1
 ARG NPROC=1
 RUN set -ex && \
     git submodule init && git submodule update --depth 1 && \
-    rm -rf chain/build && \
-    if [ -z "$NPROC" ] ; \
+    rm -rf chain/build
+
+RUN set -ex && \
+     if [ -z "$NPROC" ] ; \
         then make -j$(nproc) release-static-linux-x86_64 ; \
         else make -j$NPROC release-static-linux-x86_64 ; \
     fi
 
 FROM ubuntu:16.04 as final
 
-ENV BASE_DIR="/home/lthn"
+ENV BASE_DIR="/home/lthn/chain"
 ENV IMG_TAG="chain"
-ENV WALLET_DIR="${BASE_DIR}/wallet/${IMG_TAG}"
-ENV BIN_DIR="${BASE_DIR}/bin/${IMG_TAG}"
-ENV CONF_DIR="${BASE_DIR}/config/${IMG_TAG}"
-ENV LOG_DIR="${BASE_DIR}/log/${IMG_TAG}"
-ENV SRC_DIR="${BASE_DIR}/src/${IMG_TAG}"
-ENV DATA_DIR="${BASE_DIR}/data/${IMG_TAG}"
+ENV WALLET_DIR="${BASE_DIR}/wallet"
+ENV BIN_DIR="${BASE_DIR}/bin"
+ENV CONF_DIR="${BASE_DIR}/conf"
+ENV LOG_DIR="${BASE_DIR}/log"
+ENV SRC_DIR="${BASE_DIR}/sr"
+ENV DATA_DIR="${BASE_DIR}/data"
 
 # clean up this new ubuntu
 RUN apt-get update && \
@@ -44,7 +48,8 @@ RUN adduser --system --no-create-home --group --disabled-password lthn && \
 COPY --from=lthn/sdk-shell:latest --chown=lthn:lthn /home/lthn $BASE_DIR
 # grab the files made in the builder stage
 #COPY --from=lthn/chain $BIN_DIR $BIN_DIR
-COPY --from=builder --chown=lthn:lthn /lethean/chain/build/release/bin $BIN_DIR
+COPY --from=builder --chown=lthn:lthn /home/lthn/chain/src/chain/build/release/bin $BIN_DIR
+COPY --from=builder --chown=lthn:lthn /home/lthn/chain/src/chain/build/release/bin /usr/local/bin
 
 
 RUN chmod +x $BASE_DIR/lthn.sh $BIN_DIR/*

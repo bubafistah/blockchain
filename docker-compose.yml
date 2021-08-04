@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  blockchain:
+    image: lthn/chain:next
+    container_name: chain
+    build: .
+    expose:
+      - 48792
+      - 48782
+      - 48772
+    volumes:
+      - data:/home/lthn/chain/data:rw
+
