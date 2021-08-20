@@ -12,8 +12,7 @@ RUN set -ex && \
     if [ -z "$NPROC" ] ; \
         then make depends target=arm-linux-gnueabihf -j$(nproc) ; \
         else make depends target=arm-linux-gnueabihf -j$NPROC ; \
-    fi && \
-    (cd /lethean/chain/build/release/bin && tar -cvzf lethean-chain-armv7.tar.gz *)
+    fi
 
-FROM alpine
+FROM scratch as export-image
 COPY --from=builder /lethean/chain/build/release/bin/ /

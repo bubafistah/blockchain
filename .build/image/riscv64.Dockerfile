@@ -12,8 +12,7 @@ RUN set -ex && \
     if [ -z "$NPROC" ] ; \
         then make depends target=riscv64-linux-gnu -j$(nproc) ; \
         else make depends target=riscv64-linux-gnu -j$NPROC ; \
-    fi && \
-    (cd /lethean/chain/build/release/bin && tar -cvzf lethean-chain-riscv64.tar.gz *)
+    fi
 
-FROM alpine
+FROM scratch as export-image
 COPY --from=builder /lethean/chain/build/release/bin/ /

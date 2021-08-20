@@ -12,8 +12,7 @@ RUN set -ex && \
     if [ -z "$NPROC" ] ; \
         then make depends target=aarch64-linux-gnu -j$(nproc) ; \
         else make depends target=aarch64-linux-gnu -j$NPROC ; \
-    fi && \
-    (cd /lethean/chain/build/release/bin && tar -cvzf lethean-chain-armv8.tar.gz *)
+    fi
 
-FROM alpine
+FROM scratch as export-image
 COPY --from=builder /lethean/chain/build/release/bin/ /

@@ -3,7 +3,6 @@ stages:
   - test
   - deploy
 
-
 build:
   stage: build
   variables:
@@ -14,31 +13,13 @@ build:
       command: [ "--experimental" ]
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  after_script:
-    - docker stop release-static
-    - docker container rm release-static
   script:
-    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG .
+    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker run --name=release-static -d $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker cp release-static:/home/lthn/bin/chain $CI_PROJECT_DIR/
   artifacts:
     name: Linux 64
     paths:
-      - letheand
-      - lethean-wallet-rpc
-      - lethean-wallet-cli
-      - lethean-gen-trusted-multisig
-      - lethean-gen-ssl-cert
-      - lethean-blockchain-usage
-      - lethean-blockchain-stats
-      - lethean-blockchain-prune-known-spent-data
-      - lethean-blockchain-prune
-      - lethean-blockchain-mark-spent-outputs
-      - lethean-blockchain-import
-      - lethean-blockchain-export
-      - lethean-blockchain-depth
-      - lethean-blockchain-ancestry
+      - artifacts
   rules:
     - changes:
         - "Dockerfile"
@@ -54,32 +35,14 @@ build:linux64:
     IMG_TAG: "linux-64"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  after_script:
-    - docker stop release-$IMG_TAG
-    - docker container rm release-$IMG_TAG
   script:
-    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/linux.Dockerfile .
+    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/linux.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
   artifacts:
     name: Linux 64
     expose_as: "Linux amd64"
     paths:
-      - letheand
-      - lethean-wallet-rpc
-      - lethean-wallet-cli
-      - lethean-gen-trusted-multisig
-      - lethean-gen-ssl-cert
-      - lethean-blockchain-usage
-      - lethean-blockchain-stats
-      - lethean-blockchain-prune-known-spent-data
-      - lethean-blockchain-prune
-      - lethean-blockchain-mark-spent-outputs
-      - lethean-blockchain-import
-      - lethean-blockchain-export
-      - lethean-blockchain-depth
-      - lethean-blockchain-ancestry
+      - artifacts
   rules:
     - changes:
         - .build/image/linux.Dockerfile
@@ -95,33 +58,14 @@ build:win64:
     IMG_TAG: "win64"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  after_script:
-    - docker stop release-$IMG_TAG
-    - docker container rm release-$IMG_TAG
   script:
-    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/win64.Dockerfile .
+    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/win64.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
   artifacts:
     name: Windows x86_64
     expose_as: "Windows x86_64"
     paths:
-      - lethean-chain-windows-x86_64.tar.gz
-      - letheand.exe
-      - lethean-wallet-rpc.exe
-      - lethean-wallet-cli.exe
-      - lethean-gen-trusted-multisig.exe
-      - lethean-gen-ssl-cert.exe
-      - lethean-blockchain-usage.exe
-      - lethean-blockchain-stats.exe
-      - lethean-blockchain-prune-known-spent-data.exe
-      - lethean-blockchain-prune.exe
-      - lethean-blockchain-mark-spent-outputs.exe
-      - lethean-blockchain-import.exe
-      - lethean-blockchain-export.exe
-      - lethean-blockchain-depth.exe
-      - lethean-blockchain-ancestry.exe
+      - artifacts
   rules:
     - changes:
         - .build/image/win64.Dockerfile
@@ -137,33 +81,14 @@ build:freebsd64:
     IMG_TAG: "freebsd-64"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  after_script:
-    - docker stop release-$IMG_TAG
-    - docker container rm release-$IMG_TAG
   script:
-    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/freebsd64.Dockerfile .
+    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/freebsd64.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
   artifacts:
     name: FreeBSD x86_64
     expose_as: "FreeBSD x86_64"
     paths:
-      - lethean-chain-freebsd-x86_64.tar.gz
-      - letheand
-      - lethean-wallet-rpc
-      - lethean-wallet-cli
-      - lethean-gen-trusted-multisig
-      - lethean-gen-ssl-cert
-      - lethean-blockchain-usage
-      - lethean-blockchain-stats
-      - lethean-blockchain-prune-known-spent-data
-      - lethean-blockchain-prune
-      - lethean-blockchain-mark-spent-outputs
-      - lethean-blockchain-import
-      - lethean-blockchain-export
-      - lethean-blockchain-depth
-      - lethean-blockchain-ancestry
+      - artifacts
   rules:
     - changes:
         - .build/image/freebsd64.Dockerfile
@@ -179,33 +104,14 @@ build:macos-intel:
     IMG_TAG: "macos-intel"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  after_script:
-    - docker stop release-$IMG_TAG
-    - docker container rm release-$IMG_TAG
   script:
-    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/macos-intel.Dockerfile .
+    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/macos-intel.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
   artifacts:
     name: MacOS Intel
     expose_as: "MacOS Intel"
     paths:
-      - lethean-chain-macos-intel.tar.gz
-      - letheand
-      - lethean-wallet-rpc
-      - lethean-wallet-cli
-      - lethean-gen-trusted-multisig
-      - lethean-gen-ssl-cert
-      - lethean-blockchain-usage
-      - lethean-blockchain-stats
-      - lethean-blockchain-prune-known-spent-data
-      - lethean-blockchain-prune
-      - lethean-blockchain-mark-spent-outputs
-      - lethean-blockchain-import
-      - lethean-blockchain-export
-      - lethean-blockchain-depth
-      - lethean-blockchain-ancestry
+      - artifacts
   rules:
     - changes:
         - .build/image/macos-intel.Dockerfile
@@ -221,33 +127,14 @@ build:riscv64:
     IMG_TAG: "riscv64"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  after_script:
-    - docker stop release-$IMG_TAG
-    - docker container rm release-$IMG_TAG
   script:
-    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/riscv64.Dockerfile .
+    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/riscv64.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
   artifacts:
     name: riscv64
     expose_as: "riscv64"
     paths:
-      - lethean-chain-riscv64.tar.gz
-      - letheand
-      - lethean-wallet-rpc
-      - lethean-wallet-cli
-      - lethean-gen-trusted-multisig
-      - lethean-gen-ssl-cert
-      - lethean-blockchain-usage
-      - lethean-blockchain-stats
-      - lethean-blockchain-prune-known-spent-data
-      - lethean-blockchain-prune
-      - lethean-blockchain-mark-spent-outputs
-      - lethean-blockchain-import
-      - lethean-blockchain-export
-      - lethean-blockchain-depth
-      - lethean-blockchain-ancestry
+      - artifacts
   rules:
     - changes:
         - .build/image/riscv64.Dockerfile
@@ -263,33 +150,14 @@ build:armv7:
     IMG_TAG: "armv7"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  after_script:
-    - docker stop release-$IMG_TAG
-    - docker container rm release-$IMG_TAG
   script:
-    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/armv7.Dockerfile .
+    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/armv7.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
   artifacts:
     name: armv7
     expose_as: "armv7"
     paths:
-      - lethean-chain-armv7.tar.gz
-      - letheand
-      - lethean-wallet-rpc
-      - lethean-wallet-cli
-      - lethean-gen-trusted-multisig
-      - lethean-gen-ssl-cert
-      - lethean-blockchain-usage
-      - lethean-blockchain-stats
-      - lethean-blockchain-prune-known-spent-data
-      - lethean-blockchain-prune
-      - lethean-blockchain-mark-spent-outputs
-      - lethean-blockchain-import
-      - lethean-blockchain-export
-      - lethean-blockchain-depth
-      - lethean-blockchain-ancestry
+      - artifacts
   rules:
     - changes:
         - .build/image/armv7.Dockerfile
@@ -305,33 +173,14 @@ build:armv8:
     IMG_TAG: "armv8"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  after_script:
-    - docker stop release-$IMG_TAG
-    - docker container rm release-$IMG_TAG
   script:
-    - docker build --squash --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/armv8.Dockerfile .
+    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/armv8.Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker run --name=release-$IMG_TAG -d $CI_REGISTRY_IMAGE:$IMG_TAG
-    - docker cp release-$IMG_TAG:/ $CI_PROJECT_DIR/
   artifacts:
     name: armv8
     expose_as: "armv8"
     paths:
-      - lethean-chain-armv8.tar.gz
-      - letheand
-      - lethean-wallet-rpc
-      - lethean-wallet-cli
-      - lethean-gen-trusted-multisig
-      - lethean-gen-ssl-cert
-      - lethean-blockchain-usage
-      - lethean-blockchain-stats
-      - lethean-blockchain-prune-known-spent-data
-      - lethean-blockchain-prune
-      - lethean-blockchain-mark-spent-outputs
-      - lethean-blockchain-import
-      - lethean-blockchain-export
-      - lethean-blockchain-depth
-      - lethean-blockchain-ancestry
+      - artifacts
   rules:
     - changes:
         - .build/image/armv8.Dockerfile

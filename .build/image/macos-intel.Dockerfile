@@ -12,8 +12,7 @@ RUN set -ex && \
     if [ -z "$NPROC" ] ; \
         then make -j$(nproc) release-static-mac-x86_64 ; \
         else make -j$NPROC release-static-mac-x86_64 ; \
-    fi && \
-    (cd /lethean/chain/build/release/bin && tar -cvzf lethean-chain-macos-intel.tar.gz *)
+    fi
 
-FROM alpine
+FROM scratch as export-image
 COPY --from=builder /lethean/chain/build/release/bin/ /

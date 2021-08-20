@@ -12,8 +12,7 @@ RUN set -ex && \
     if [ -z "$NPROC" ] ; \
         then make depends target=x86_64-w64-mingw32 tag=win-x64 -j$(nproc) ; \
         else make depends target=x86_64-w64-mingw32 tag=win-x64 -j$NPROC ; \
-    fi && \
-    (cd /lethean/chain/build/release/bin && tar -cvzf lethean-chain-windows-x86_64.tar.gz *)
+    fi
 
-FROM alpine
+FROM scratch as export-image
 COPY --from=builder /lethean/chain/build/release/bin/ /
