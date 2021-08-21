@@ -1,6 +1,3 @@
-venv
 docs
 .build
-chain/build
-chain/contrib/depends
-!chain/src/device_trezor/trezor/messages/*
+data

@@ -5,183 +5,75 @@ stages:
 
 build:
   stage: build
-  variables:
-    IMG_TAG: "next"
   image: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    OSX_SDK: 10:11
+  parallel:
+    matrix:
+      - TARGET: x86_64-unknown-linux-gnu
+        PACKAGE: "gperf cmake python3-zmq libdbus-1-dev libharfbuzz-dev"
+      - TARGET: i686-pc-linux-gnu
+        PACKAGE: "gperf cmake g++-multilib python3-zmq"
+      - TARGET: arm-linux-gnueabihf
+        PACKAGE: "python3 gperf g++-arm-linux-gnueabihf"
+      - TARGET: aarch64-linux-gnu
+        PACKAGE: "python3 gperf g++-aarch64-linux-gnu"
+      - TARGET: x86_64-w64-mingw32
+        PACKAGE: "cmake python3 g++-mingw-w64-x86-64 qttools5-dev-tools"
+      - TARGET: i686-w64-mingw32
+        PACKAGE: "python3 g++-mingw-w64-i686 qttools5-dev-tools"
+      - TARGET: riscv64-linux-gnu
+        PACKAGE: "python3 gperf g++-riscv64-linux-gnu"
+      - TARGET: x86_64-unknown-freebsd
+        PACKAGE: "clang-8 gperf cmake python3-zmq libdbus-1-dev libharfbuzz-dev"
   services:
     - name: docker:dind
       command: [ "--experimental" ]
   before_script:
+    - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG .
-    - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
+    - docker build -o artifacts --build-arg BUILD_TARGET=$TARGET --build-arg PACKAGE="$PACKAGE" --cache-from $CI_REGISTRY_IMAGE:next-$TARGET -t $CI_REGISTRY_IMAGE:next-$TARGET .
+    - docker push "$CI_REGISTRY_IMAGE:next-$TARGET"
   artifacts:
-    name: Linux 64
+    name: $TARGET
     paths:
       - artifacts
   rules:
     - changes:
-        - "Dockerfile"
-        - "chain/**/*"
+        - chain
 
-build:linux64:
-  stage: build
-  image: docker
-  services:
-    - name: docker:dind
-      command: [ "--experimental" ]
-  variables:
-    IMG_TAG: "linux-64"
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  script:
-    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/linux.Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-  artifacts:
-    name: Linux 64
-    expose_as: "Linux amd64"
-    paths:
-      - artifacts
-  rules:
-    - changes:
-        - .build/image/linux.Dockerfile
-        - "chain/**/*"
 
-build:win64:
-  stage: build
+deploy:
+  stage: deploy
   image: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
   services:
     - name: docker:dind
       command: [ "--experimental" ]
-  variables:
-    IMG_TAG: "win64"
+  parallel:
+    matrix:
+      - TARGET: x86_64-unknown-linux-gnu
+      - TARGET: x86_64-unknown-freebsd
+      - TARGET: i686-pc-linux-gnu
+      - TARGET: x86_64-w64-mingw32
+      - TARGET: i686-w64-mingw32
+      - TARGET: arm-linux-gnueabihf
+      - TARGET: aarch64-linux-gnu
+      - TARGET: riscv64-linux-gnu
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker login -u "$DOCKER_REGISTRY_USER" -p "$DOCKER_REGISTRY_PASSWORD" $DOCKER_REGISTRY
   script:
-    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/win64.Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-  artifacts:
-    name: Windows x86_64
-    expose_as: "Windows x86_64"
-    paths:
-      - artifacts
+    - docker pull $CI_REGISTRY_IMAGE:next-$TARGET
+    - docker tag $CI_REGISTRY_IMAGE:next-$TARGET $DOCKER_REGISTRY/lthn/chain:next-$TARGET
+    - docker push $DOCKER_REGISTRY/lthn/chain:next-$TARGET
+  environment:
+    name: $IMG_TAG
   rules:
-    - changes:
-        - .build/image/win64.Dockerfile
-        - "chain/**/*"
+    - if: $CI_COMMIT_BRANCH == 'main'
+      changes:
+        - chain
 
-build:freebsd64:
-  stage: build
-  image: docker
-  services:
-    - name: docker:dind
-      command: [ "--experimental" ]
-  variables:
-    IMG_TAG: "freebsd-64"
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  script:
-    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/freebsd64.Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-  artifacts:
-    name: FreeBSD x86_64
-    expose_as: "FreeBSD x86_64"
-    paths:
-      - artifacts
-  rules:
-    - changes:
-        - .build/image/freebsd64.Dockerfile
-        - "chain/**/*"
-
-build:macos-intel:
-  stage: build
-  image: docker
-  services:
-    - name: docker:dind
-      command: [ "--experimental" ]
-  variables:
-    IMG_TAG: "macos-intel"
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  script:
-    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/macos-intel.Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-  artifacts:
-    name: MacOS Intel
-    expose_as: "MacOS Intel"
-    paths:
-      - artifacts
-  rules:
-    - changes:
-        - .build/image/macos-intel.Dockerfile
-        - "chain/**/*"
-
-build:riscv64:
-  stage: build
-  image: docker
-  services:
-    - name: docker:dind
-      command: [ "--experimental" ]
-  variables:
-    IMG_TAG: "riscv64"
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  script:
-    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/riscv64.Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-  artifacts:
-    name: riscv64
-    expose_as: "riscv64"
-    paths:
-      - artifacts
-  rules:
-    - changes:
-        - .build/image/riscv64.Dockerfile
-        - "chain/**/*"
-
-build:armv7:
-  stage: build
-  image: docker
-  services:
-    - name: docker:dind
-      command: [ "--experimental" ]
-  variables:
-    IMG_TAG: "armv7"
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  script:
-    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/armv7.Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-  artifacts:
-    name: armv7
-    expose_as: "armv7"
-    paths:
-      - artifacts
-  rules:
-    - changes:
-        - .build/image/armv7.Dockerfile
-        - "chain/**/*"
-
-build:armv8:
-  stage: build
-  image: docker
-  services:
-    - name: docker:dind
-      command: [ "--experimental" ]
-  variables:
-    IMG_TAG: "armv8"
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  script:
-    - docker build --squash -o artifacts --no-cache -t $CI_REGISTRY_IMAGE:$IMG_TAG -f .build/image/armv8.Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE:$IMG_TAG
-  artifacts:
-    name: armv8
-    expose_as: "armv8"
-    paths:
-      - artifacts
-  rules:
-    - changes:
-        - .build/image/armv8.Dockerfile
-        - "chain/**/*"
