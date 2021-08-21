@@ -40,9 +40,7 @@ build:
     name: $TARGET
     paths:
       - artifacts
-  rules:
-    - changes:
-        - chain
+
 
 
 deploy:
@@ -74,6 +72,5 @@ deploy:
     name: $IMG_TAG
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
-      changes:
-        - chain
+
 
