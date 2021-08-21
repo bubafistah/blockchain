@@ -5,7 +5,7 @@ FROM ${TOOLCHAIN_IMAGE} as depends
 FROM lthn/build:compile as build
 ARG BUILD_TARGET=x86_64-unknown-linux-gnu
 ARG PACKAGE="python3 gperf g++-arm-linux-gnueabihf"
-ARG THREADS=2
+ARG THREADS=1
 
 RUN apt-get update && apt-get install -y ${PACKAGE}
 
