@@ -49,7 +49,7 @@ COPY . .
 COPY --from=depends / /lethean/chain/contrib/depends
 
 # git repo is at the top level, we need to update it before going into the chain
-RUN git submodule update --init --force
+RUN git submodule update --init --force || true
 
 # -C runs this command inside the set folder, the same as: cd /lethean/chain && make -j20 depends target=x86_64-w64-mingw32;
 RUN make -j${THREADS} -C /lethean/chain depends target=${BUILD_TARGET};
