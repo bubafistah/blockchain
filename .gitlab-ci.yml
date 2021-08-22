@@ -30,7 +30,7 @@ build:
   artifacts:
     name: $TARGET
     paths:
-      - artifacts
+      - artifacts/
 
 
 
