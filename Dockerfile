@@ -25,7 +25,7 @@ ARG BUILD_TARGET=x86_64-unknown-linux-gnu
 # x86_64-unknown-freebsd: "clang-8 gperf cmake python3-zmq libdbus-1-dev libharfbuzz-dev"
 ARG PACKAGE="python3 gperf g++-arm-linux-gnueabihf"
 
-# 1 thread needs 2gb ram, to adjust add this to docker build cmd: --build-arg THREADS=20
+# 1 thread needs 2gb ram, to adjust add this to the docker build cmd: --build-arg THREADS=20
 ARG THREADS=1
 
 # You can use the PACKAGE build arg to inject packages, but you must include the ones above also.
