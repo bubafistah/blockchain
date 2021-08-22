@@ -26,7 +26,7 @@ ARG BUILD_TARGET=x86_64-unknown-linux-gnu
 ARG PACKAGE="python3 gperf g++-arm-linux-gnueabihf"
 
 # 1 thread needs 2gb ram, to adjust add this to the docker build cmd: --build-arg THREADS=20
-ARG THREADS=20
+ARG THREADS=1
 
 # You can use the PACKAGE build arg to inject packages, but you must include the ones above also.
 RUN apt-get update && apt-get install -y ${PACKAGE}
