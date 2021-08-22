@@ -15,12 +15,6 @@ static:
 clean: ## Compile Lethean Blockchain
 	$(MAKE) -C $(CODE_DIR) clean && rm -rf public
 
-i686-linux-gnu: ## Compiles Linux 32 static executables
-	$(MAKE) -C $(CODE_DIR) depends target=i686-linux-gnu
-
-x86_64-linux-gnu: ## Compiles Linux 64 static executables
-	$(MAKE) -C $(CODE_DIR) depends target=x86_64-linux-gnu
-
 i686-w64-mingw32: ## Compiles Windows 32 static executables
 	$(MAKE) -C $(CODE_DIR) depends target=i686-w64-mingw32
 
@@ -45,11 +39,9 @@ x86_64-unknown-freebsd: ## FreeBSD executables
 x86_64-unknown-linux-gnu: ## Linux executables
 	$(MAKE) -C $(CODE_DIR) depends target=x86_64-unknown-linux-gnu
 
-arm-linux-android: ## Android 32 executables
-	$(MAKE) -C $(CODE_DIR) depends target=arm-linux-android
+i686-pc-linux-gnu: ## Linux executables
+	$(MAKE) -C $(CODE_DIR) depends target=i686-pc-linux-gnu
 
-aarch64-linux-android: ## Android 64 executables
-	$(MAKE) -C $(CODE_DIR) depends target=aarch64-linux-android
 
 docker-x86_64-unknown-linux-gnu: ## x86_64-unknown-linux-gnu
 	docker build -t lthn/chain:next-x86_64-unknown-linux-gnu --build-arg BUILD_TARGET=x86_64-unknown-linux-gnu --build-arg PACKAGE="gperf cmake python3-zmq libdbus-1-dev libharfbuzz-dev" .
