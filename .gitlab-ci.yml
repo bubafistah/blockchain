@@ -12,21 +12,13 @@ build:
   parallel:
     matrix:
       - TARGET: x86_64-unknown-linux-gnu
-        PACKAGE: "gperf cmake python3-zmq libdbus-1-dev libharfbuzz-dev"
       - TARGET: i686-pc-linux-gnu
-        PACKAGE: "gperf cmake g++-multilib python3-zmq"
       - TARGET: arm-linux-gnueabihf
-        PACKAGE: "python3 gperf g++-arm-linux-gnueabihf"
       - TARGET: aarch64-linux-gnu
-        PACKAGE: "python3 gperf g++-aarch64-linux-gnu"
       - TARGET: x86_64-w64-mingw32
-        PACKAGE: "cmake python3 g++-mingw-w64-x86-64 qttools5-dev-tools"
       - TARGET: i686-w64-mingw32
-        PACKAGE: "python3 g++-mingw-w64-i686 qttools5-dev-tools"
       - TARGET: riscv64-linux-gnu
-        PACKAGE: "python3 gperf g++-riscv64-linux-gnu"
       - TARGET: x86_64-unknown-freebsd
-        PACKAGE: "clang-8 gperf cmake python3-zmq libdbus-1-dev libharfbuzz-dev"
   services:
     - name: docker:dind
       command: [ "--experimental" ]
@@ -34,7 +26,7 @@ build:
     - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - docker build -o artifacts --build-arg BUILD_TARGET=$TARGET --build-arg PACKAGE="$PACKAGE" .
+    - docker build -o artifacts --build-arg BUILD=$TARGET  .
   artifacts:
     name: $TARGET
     paths:
