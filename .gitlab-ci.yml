@@ -34,12 +34,11 @@ build:
     - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - docker build -o /artifacts --build-arg BUILD_TARGET=$TARGET --build-arg PACKAGE="$PACKAGE" --cache-from $CI_REGISTRY_IMAGE:next-$TARGET -t $CI_REGISTRY_IMAGE:next-$TARGET .
-    - docker push "$CI_REGISTRY_IMAGE:next-$TARGET"
+    - docker build -o artifacts --build-arg BUILD_TARGET=$TARGET --build-arg PACKAGE="$PACKAGE" .
   artifacts:
     name: $TARGET
     paths:
-      - /artifacts
+      - artifacts
 
 
 
