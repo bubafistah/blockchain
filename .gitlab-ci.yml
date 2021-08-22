@@ -11,26 +11,33 @@ build:
     OSX_SDK: 10:11
   parallel:
     matrix:
-      - TARGET: x86_64-unknown-linux-gnu
-      - TARGET: i686-pc-linux-gnu
-      - TARGET: arm-linux-gnueabihf
-      - TARGET: aarch64-linux-gnu
-      - TARGET: x86_64-w64-mingw32
-      - TARGET: i686-w64-mingw32
-      - TARGET: riscv64-linux-gnu
-      - TARGET: x86_64-unknown-freebsd
+      - TAG: linux-64
+        TARGET: x86_64-unknown-linux-gnu
+      - TAG: linux-32
+        TARGET: i686-pc-linux-gnu
+      - TAG: arm-7
+        TARGET: arm-linux-gnueabihf
+      - TAG: arm-8
+        TARGET: aarch64-linux-gnu
+      - TAG: windows-64
+        TARGET: x86_64-w64-mingw32
+      - TAG: windows-32
+        TARGET: i686-w64-mingw32
+      - TAG: riscv-64
+        TARGET: riscv64-linux-gnu
+      - TAG: freebsd-64
+        TARGET: x86_64-unknown-freebsd
   services:
     - name: docker:dind
       command: [ "--experimental" ]
   before_script:
-    - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - docker build -o artifacts --build-arg BUILD=$TARGET  .
+    - docker run -v $(pwd):/build lthn/build:$TAG
   artifacts:
     name: $TARGET
     paths:
-      - artifacts/
+      - dist/$TARGET/
 
 
 
