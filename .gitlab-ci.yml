@@ -8,6 +8,8 @@ build:
   image: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_BUILDKIT: 1
     OSX_SDK: 10:11
   parallel:
     matrix:
@@ -39,13 +41,13 @@ build:
     paths:
       - dist/$TARGET/
 
-
-
 deploy:
   stage: deploy
   image: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_BUILDKIT: 1
   services:
     - name: docker:dind
       command: [ "--experimental" ]
