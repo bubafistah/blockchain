@@ -29,7 +29,7 @@ docker logs -f chain-daemon
 # NOTE: Realtime log output is provided showing sync and other events.
 ```
 
-And that is it, you can now point your GUI wallet or cli wallet at localhost:48782 or <chain-daemon-ip>:48782
+And that is it, you can now point your GUI wallet or cli wallet at localhost:48782 or CHAIN-DAEMON-IP:48782
 
 If that looks TL:DR run this.
 ```shell
@@ -43,13 +43,16 @@ version: "3.9"
 services:
   blockchain:
     image: lthn/chain
-    container_name: chain
+    container_name: chain-daemon
     build: .
     expose:
-      - 48792
-      - 48782
-      - 48772
+      - "48792"
+      - "48782"
+      - "48772"
+    ports:
+      - "48792:48792"
+      - "48782:48782"
+      - "48772:48772"
     volumes:
-      - data:/home/lthn/chain/data:rw
-
+      - ./data:/home/lthn/chain/data:rw
 ```
