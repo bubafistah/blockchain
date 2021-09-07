@@ -2,12 +2,16 @@ version: "3.9"
 services:
   blockchain:
     image: lthn/chain:next
-    container_name: chain
+    container_name: chain-daemon
     build: .
     expose:
-      - 48792
-      - 48782
-      - 48772
+      - "48792"
+      - "48782"
+      - "48772"
+    ports:
+      - "48792:48792"
+      - "48782:48782"
+      - "48772:48772"
     volumes:
-      - data:/home/lthn/chain/data:rw
+      - ./data:/home/lthn/chain/data:rw
 
