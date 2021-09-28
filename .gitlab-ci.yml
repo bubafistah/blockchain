@@ -34,9 +34,8 @@ b:base:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - docker pull "lthn/chain" || true
-    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from lthn/chain -t lthn/chain --target=base -f Dockerfile .
-    - docker push "lthn/chain"
+    - docker build --pull --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE -t $CI_REGISTRY_IMAGE --target=base -f Dockerfile .
+    - docker push "$CI_REGISTRY_IMAGE"
 
 b:depends:
   stage: depends
