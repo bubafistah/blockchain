@@ -2,6 +2,7 @@ stages:
   - base
   - depends
   - build
+  - deploy
 
 Docker Hub:
   stage: deploy
