@@ -52,7 +52,7 @@ RUN apt-get install -y python3 g++-mingw-w64 qttools5-dev-tools
 RUN update-alternatives --set x86_64-w64-mingw32-g++ $(which x86_64-w64-mingw32-g++-posix) && \
     update-alternatives --set x86_64-w64-mingw32-gcc $(which x86_64-w64-mingw32-gcc-posix);
 COPY . .
-RUN cd contrib/depends && make download-windows
+RUN cd contrib/depends && make download-win
 RUN cd contrib/depends && make HOST=x86_64-w64-mingw32 -j${THREADS} && cd ../.. && mkdir -p build/x86_64-w64-mingw32/release
 
 FROM depends-windows as build-windows
@@ -76,7 +76,7 @@ COPY --from=build-linux /build/build/x86_64-unknown-linux-gnu/release/bin /
 FROM scratch as final-windows
 COPY --from=build-windows /build/build/x86_64-w64-mingw32/release/bin /
 FROM scratch as final-macos
-COPY --from=build-macos /build/build/x86_64-apple-darwin11/release/bin /
+COPY --from=build-macos /build/build/release/bin /
 
 FROM scratch as final
 COPY --from=final-linux / /linux
