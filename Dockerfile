@@ -5,14 +5,9 @@ FROM ubuntu:20.04 as base
 # arm: aarch64-linux-gnu, riscv64-linux-gnu
 ARG BUILD=x86_64-unknown-linux-gnu
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y build-essential libtool cmake autotools-dev automake pkg-config \
-      bsdmainutils curl git ca-certificates ccache wget gettext python libssl-dev make automake  \
-      gettext gperf libpthread-stubs0-dev libtool-bin xutils-dev bison autopoint \
-      libzmq3-dev libunbound-dev libsodium-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev \
-      libexpat1-dev libpgm-dev qttools5-dev-tools libhidapi-dev libusb-1.0-0-dev libprotobuf-dev protobuf-compiler \
-      libudev-dev libboost-chrono-dev libboost-date-time-dev libboost-filesystem-dev libboost-locale-dev \
-      libboost-program-options-dev libboost-regex-dev libboost-serialization-dev libboost-system-dev \
-      libboost-thread-dev ccache doxygen graphviz
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential libtool libtool-bin cmake autotools-dev automake pkg-config \
+      bsdmainutils curl git ca-certificates wget gettext python libssl-dev make gperf xutils-dev bison autopoint \
+      libreadline6-dev protobuf-compiler doxygen graphviz
 
 RUN apt-get install -y libgtest-dev && cd /usr/src/gtest && cmake . && make && mv /usr/src/gtest/* /usr/lib/
 # Package Mapping, eg: --build-arg TARGET=aarch64-linux-gnu --build-arg PACKAGE="python3 gperf g++-aarch64-linux-gnu"
