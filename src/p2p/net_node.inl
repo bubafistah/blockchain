@@ -49,16 +49,20 @@
 #include "crypto/crypto.h"
 #include "storages/levin_abstract_invoke2.h"
 
+#include <miniupnp/miniupnpc/miniupnpc.h>
+#include <miniupnp/miniupnpc/upnpcommands.h>
+#include <miniupnp/miniupnpc/upnperrors.h>
+
 // We have to look for miniupnpc headers in different places, dependent on if its compiled or external
-#ifdef UPNP_STATIC
-  #include <miniupnpc/miniupnpc.h>
-  #include <miniupnpc/upnpcommands.h>
-  #include <miniupnpc/upnperrors.h>
-#else
-  #include "miniupnpc.h"
-  #include "upnpcommands.h"
-  #include "upnperrors.h"
-#endif
+//#ifdef UPNP_STATIC
+//  #include <miniupnpc/miniupnpc.h>
+//  #include <miniupnpc/upnpcommands.h>
+//  #include <miniupnpc/upnperrors.h>
+//#else
+//  #include "miniupnpc.h"
+//  #include "upnpcommands.h"
+//  #include "upnperrors.h"
+//#endif
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.p2p"

@@ -18,9 +18,9 @@ For example:
 make HOST=x86_64-w64-mingw32 -j4
 ```
 
-A toolchain will be generated that's suitable for plugging into Monero's
+A toolchain will be generated that's suitable for plugging into Lethean's
 cmake. In the above example, a dir named x86_64-w64-mingw32 will be
-created. To use it for Monero:
+created. To use it for Lethean:
 
 ```bash
 cmake -DCMAKE_TOOLCHAIN=`pwd`/contrib/depends/x86_64-w64-mingw32
@@ -33,6 +33,7 @@ Common `host-platform-triplets` for cross compilation are:
 - `x86_64-apple-darwin11` for MacOSX
 - `arm-linux-gnueabihf` for Linux ARM 32 bit
 - `aarch64-linux-gnu` for Linux ARM 64 bit
+- `riscv64-linux-gnu` for Linux RISCV 64 bit
 
 No other options are needed, the paths are automatically configured.
 

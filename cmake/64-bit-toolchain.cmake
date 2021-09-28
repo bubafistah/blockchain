@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2017, The Monero Project
+# Copyright (c) 2014-2020, The Monero Project
 # 
 # All rights reserved.
 # 
@@ -26,7 +26,9 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set (CMAKE_SYSTEM_NAME Windows)
+if (NOT CMAKE_HOST_WIN32)
+  set (CMAKE_SYSTEM_NAME Windows)
+endif()
 
 set (GCC_PREFIX x86_64-w64-mingw32)
 set (CMAKE_C_COMPILER ${GCC_PREFIX}-gcc)
@@ -37,6 +39,7 @@ set (CMAKE_LINKER ld CACHE FILEPATH "" FORCE)
 #set (CMAKE_RANLIB ${GCC_PREFIX}-gcc-ranlib CACHE FILEPATH "" FORCE)
 set (CMAKE_RC_COMPILER windres)
 
+set (CMAKE_FIND_ROOT_PATH "${MSYS2_FOLDER}/mingw64")
 
 # Ensure cmake doesn't find things in the wrong places
 set (CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER) # Find programs on host

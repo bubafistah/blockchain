@@ -100,7 +100,7 @@ namespace daemonizer
     }
     else
     {
-      //LOG_PRINT_L0("Lethean '" << MONERO_RELEASE_NAME << "' (v" << MONERO_VERSION_FULL);
+      //LOG_PRINT_L0("Lethean '" << DEF_MONERO_RELEASE_NAME << "' (v" << DEF_MONERO_VERSION_FULL);
       return executor.run_interactive(vm);
     }
   }

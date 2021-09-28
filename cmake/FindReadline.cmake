@@ -15,12 +15,16 @@
 #
 #  READLINE_FOUND            System has readline, include and lib dirs found
 #  GNU_READLINE_FOUND        Version of readline found is GNU readline, not libedit!
+#  LIBEDIT_FOUND             Version of readline found is libedit, not GNU readline!
 #  Readline_INCLUDE_DIR      The readline include directories. 
 #  Readline_LIBRARY          The readline library.
+#  GNU_READLINE_LIBRARY      The GNU readline library or empty string.
+#  LIBEDIT_LIBRARY           The libedit library or empty string.
 
 find_path(Readline_ROOT_DIR
     NAMES include/readline/readline.h
     PATHS /usr/local/opt/readline/ /opt/local/ /usr/local/ /usr/
+    NO_DEFAULT_PATH
 )
 
 find_path(Readline_INCLUDE_DIR
@@ -62,8 +66,9 @@ check_function_exists(rl_copy_text HAVE_COPY_TEXT)
 check_function_exists(rl_filename_completion_function HAVE_COMPLETION_FUNCTION)
 
 if(NOT HAVE_COMPLETION_FUNCTION)
-  unset(READLINE_FOUND)
-  set(CMAKE_REQUIRED_LIBRARIES ${Readline_LIBRARY} ${Termcap_LIBRARY})
+  if (Readline_LIBRARY)
+    set(CMAKE_REQUIRED_LIBRARIES ${Readline_LIBRARY} ${Termcap_LIBRARY})
+  endif(Readline_LIBRARY)
   check_function_exists(rl_copy_text HAVE_COPY_TEXT_TC)
   check_function_exists(rl_filename_completion_function HAVE_COMPLETION_FUNCTION_TC)
   set(HAVE_COMPLETION_FUNCTION ${HAVE_COMPLETION_FUNCTION_TC})
@@ -73,7 +78,14 @@ if(NOT HAVE_COMPLETION_FUNCTION)
   endif(HAVE_COMPLETION_FUNCTION)
 endif(NOT HAVE_COMPLETION_FUNCTION)
 
-if(Readline_ROOT_DIR AND HAVE_COMPLETION_FUNCTION AND HAVE_COPY_TEXT)
+set(LIBEDIT_LIBRARY "")
+set(GNU_READLINE_LIBRARY "")
+
+if(HAVE_COMPLETION_FUNCTION AND HAVE_COPY_TEXT)
   set(GNU_READLINE_FOUND TRUE)
-  set(READLINE_FOUND TRUE)
-endif(Readline_ROOT_DIR AND HAVE_COMPLETION_FUNCTION AND HAVE_COPY_TEXT)
+  set(GNU_READLINE_LIBRARY ${Readline_LIBRARY})
+elseif(READLINE_FOUND AND NOT HAVE_COPY_TEXT)
+  set(LIBEDIT_FOUND TRUE)
+  set(LIBEDIT_LIBRARY ${Readline_LIBRARY})
+endif(HAVE_COMPLETION_FUNCTION AND HAVE_COPY_TEXT)
+
