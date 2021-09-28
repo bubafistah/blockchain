@@ -35,8 +35,8 @@ b:base:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     - docker pull "lthn/chain" || true
-    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY/lthn/chain -t lthn/chain --target=base -f Dockerfile .
-    - docker image tag "lthn/chain" "$CI_REGISTRY/lthn/chain"
+    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from lthn/chain -t lthn/chain --target=base -f Dockerfile .
+    - docker push "lthn/chain"
 
 b:depends:
   stage: depends
@@ -58,8 +58,8 @@ b:depends:
   script:
     - docker pull "lthn/chain:depends-${TARGET}" || true
     - docker pull "lthn/chain" || true
-    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY/lthn/chain -t lthn/chain:depends-${TARGET} --target=depends-${TARGET} -f Dockerfile .
-    - docker image tag "lthn/chain:depends-${TARGET}" "$CI_REGISTRY/lthn/chain:depends-${TARGET}"
+    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from lthn/chain -t lthn/chain:depends-${TARGET} --target=depends-${TARGET} -f Dockerfile .
+    - docker push "lthn/chain:depends-${TARGET}"
 
 b:build:
   stage: build
@@ -81,8 +81,8 @@ b:build:
   script:
     - docker pull "lthn/chain:${TARGET}" || true
     - docker pull "lthn/chain" || true
-    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY/lthn/chain -t lthn/chain:${TARGET} --target=final-${TARGET} -f Dockerfile .
-    - docker image tag "lthn/chain:${TARGET}" "$CI_REGISTRY/lthn/chain:${TARGET}"
+    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from lthn/chain -t lthn/chain:${TARGET} --target=final-${TARGET} -f Dockerfile .
+    - docker push "lthn/chain:${TARGET}"
 
 
 
