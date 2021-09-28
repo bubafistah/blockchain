@@ -5,7 +5,8 @@ FROM ubuntu:20.04 as base
 # arm: aarch64-linux-gnu, riscv64-linux-gnu
 ARG BUILD=x86_64-unknown-linux-gnu
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential libtool libtool-bin cmake autotools-dev automake pkg-config \
+RUN apt-get update && apt-get install -y build-essential g++ gcc cross-gcc-dev gcc-multilib
+RUN apt-get install -y --no-install-recommends libtool libtool-bin cmake autotools-dev automake pkg-config \
       bsdmainutils curl git ca-certificates wget gettext python libssl-dev make gperf xutils-dev bison autopoint \
       libreadline6-dev protobuf-compiler doxygen graphviz
 
@@ -41,7 +42,7 @@ RUN case ${BUILD} in \
     esac
 
 # 1 thread needs 2gb ram, to adjust add this to the docker build cmd: --build-arg THREADS=20
-ARG THREADS=1
+ARG THREADS=20
 
 WORKDIR /build
 
@@ -51,24 +52,33 @@ RUN apt-get install -y python3 g++-mingw-w64 qttools5-dev-tools
 RUN update-alternatives --set x86_64-w64-mingw32-g++ $(which x86_64-w64-mingw32-g++-posix) && \
     update-alternatives --set x86_64-w64-mingw32-gcc $(which x86_64-w64-mingw32-gcc-posix);
 COPY . .
+RUN cd contrib/depends && make download-windows
 RUN cd contrib/depends && make HOST=x86_64-w64-mingw32 -j${THREADS} && cd ../.. && mkdir -p build/x86_64-w64-mingw32/release
 
 FROM depends-windows as build-windows
 RUN cd build/x86_64-w64-mingw32/release && cmake -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-w64-mingw32/share/toolchain.cmake ../../.. && make -j${THREADS}
 
 FROM base as depends-linux
-RUN apt-get install -y gperf python3-zmq libdbus-1-dev libharfbuzz-dev
+RUN apt-get install -y gperf python3-zmq libdbus-1-dev libharfbuzz-dev crossbuild-essential-amd64
 COPY . .
+RUN cd contrib/depends && make download-linux
 RUN cd contrib/depends && make HOST=x86_64-unknown-linux-gnu -j${THREADS} && cd ../.. && mkdir -p build/x86_64-unknown-linux-gnu/release
 
 FROM depends-linux as build-linux
 RUN cd build/x86_64-unknown-linux-gnu/release && cmake -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-unknown-linux-gnu/share/toolchain.cmake ../../.. && make -j${THREADS}
 
+FROM depends-linux as build-macos
+RUN make release-static-mac-x86_64 -j${THREADS}
+
+
 FROM scratch as final-linux
 COPY --from=build-linux /build/build/x86_64-unknown-linux-gnu/release/bin /
 FROM scratch as final-windows
 COPY --from=build-windows /build/build/x86_64-w64-mingw32/release/bin /
+FROM scratch as final-macos
+COPY --from=build-macos /build/build/x86_64-apple-darwin11/release/bin /
 
 FROM scratch as final
 COPY --from=final-linux / /linux
 COPY --from=final-windows / /windows
+COPY --from=final-macos / /macos
