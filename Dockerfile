@@ -46,7 +46,7 @@ RUN case ${BUILD} in \
     esac
 
 # 1 thread needs 2gb ram, to adjust add this to the docker build cmd: --build-arg THREADS=20
-ARG THREADS=20
+ARG THREADS=1
 
 WORKDIR /build
 
