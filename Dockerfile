@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y build-essential g++ gcc cross-gcc-dev gcc-multilib
 RUN apt-get install -y --no-install-recommends libtool libtool-bin cmake autotools-dev automake pkg-config \
       bsdmainutils curl git ca-certificates wget gettext python libssl-dev make gperf xutils-dev bison autopoint \
-      libreadline6-dev protobuf-compiler doxygen graphviz
+      protobuf-compiler doxygen graphviz
 
 RUN apt-get install -y libgtest-dev && cd /usr/src/gtest && cmake . && make && mv /usr/src/gtest/* /usr/lib/
 # Package Mapping, eg: --build-arg TARGET=aarch64-linux-gnu --build-arg PACKAGE="python3 gperf g++-aarch64-linux-gnu"
@@ -65,7 +65,7 @@ RUN cd contrib/depends && make download-linux
 RUN cd contrib/depends && make HOST=x86_64-unknown-linux-gnu -j${THREADS} && cd ../.. && mkdir -p build/x86_64-unknown-linux-gnu/release
 
 FROM depends-linux as build-linux
-RUN cd build/x86_64-unknown-linux-gnu/release && cmake -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-unknown-linux-gnu/share/toolchain.cmake ../../.. && make -j${THREADS}
+RUN make release-static-linux-x86_64 -j${THREADS}
 
 FROM depends-linux as build-macos
 RUN make release-static-mac-x86_64 -j${THREADS}
@@ -76,7 +76,7 @@ COPY --from=build-linux /build/build/x86_64-unknown-linux-gnu/release/bin /
 FROM scratch as final-windows
 COPY --from=build-windows /build/build/x86_64-w64-mingw32/release/bin /
 FROM scratch as final-macos
-COPY --from=build-macos /build/build/release/bin /
+COPY --from=build-macos /build/build/* /
 
 FROM scratch as final
 COPY --from=final-linux / /linux
