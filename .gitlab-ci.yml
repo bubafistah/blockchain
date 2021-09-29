@@ -84,6 +84,6 @@ b:build:
   artifacts:
     name: ${TARGET}
     paths:
-      - /artifacts
+      - /artifacts/*
 
 
