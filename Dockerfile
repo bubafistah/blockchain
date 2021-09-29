@@ -51,18 +51,19 @@ RUN apt-get install -y python3 g++-mingw-w64 qttools5-dev-tools
 # Windows needs a posix alternative to compile
 RUN update-alternatives --set x86_64-w64-mingw32-g++ $(which x86_64-w64-mingw32-g++-posix) && \
     update-alternatives --set x86_64-w64-mingw32-gcc $(which x86_64-w64-mingw32-gcc-posix);
-COPY . .
-RUN cd contrib/depends && make download-win
-RUN cd contrib/depends && make HOST=x86_64-w64-mingw32 -j${THREADS} && cd ../.. && mkdir -p build/x86_64-w64-mingw32/release
+COPY ./contrib/depends /build/contrib/depends
+RUN cd /build/contrib/depends && make download-win
+RUN cd /build/contrib/depends && make HOST=x86_64-w64-mingw32 -j${THREADS} && cd ../.. && mkdir -p /build/build/x86_64-w64-mingw32/release
 
 FROM depends-windows as build-windows
+COPY . .
 RUN cd build/x86_64-w64-mingw32/release && cmake -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-w64-mingw32/share/toolchain.cmake ../../.. && make -j${THREADS}
 
 FROM base as depends-linux
 RUN apt-get install -y gperf python3-zmq libdbus-1-dev libharfbuzz-dev crossbuild-essential-amd64
-COPY . .
-RUN cd contrib/depends && make download-linux
-RUN cd contrib/depends && make HOST=x86_64-unknown-linux-gnu -j${THREADS} && cd ../.. && mkdir -p build/x86_64-unknown-linux-gnu/release
+COPY ./contrib/depends /build/contrib/depends
+RUN cd /build/contrib/depends && make download-linux
+RUN cd /build/contrib/depends && make HOST=x86_64-unknown-linux-gnu -j${THREADS} && cd ../.. && mkdir -p /build/build/x86_64-unknown-linux-gnu/release
 
 FROM depends-linux as build-linux
 RUN make release-static-linux-x86_64 -j${THREADS}
