@@ -49,6 +49,7 @@ b:depends:
     matrix:
       - TARGET: windows
       - TARGET: linux
+      - TARGET: macos
   services:
     - name: docker:dind
       command: [ "--experimental" ]

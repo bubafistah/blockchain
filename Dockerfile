@@ -61,6 +61,9 @@ COPY ./contrib/depends /build/contrib/depends
 RUN cd /build/contrib/depends && make download-linux
 RUN cd /build/contrib/depends && make HOST=x86_64-unknown-linux-gnu -j${THREADS} && cd ../.. && mkdir -p /build/build/x86_64-unknown-linux-gnu/release
 
+FROM depends-linux as depends-macos
+
+
 FROM depends-windows as build-windows
 COPY . .
 RUN cd build/x86_64-w64-mingw32/release && cmake -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-w64-mingw32/share/toolchain.cmake ../../.. && make -j${THREADS}
@@ -70,7 +73,7 @@ FROM depends-linux as build-linux
 COPY . .
 RUN cd build/x86_64-unknown-linux-gnu/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-x64" -D DEVELOPER_LOCAL_TOOLS=1 -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-unknown-linux-gnu/share/toolchain.cmake ../../.. && make -j${THREADS}
 
-FROM depends-linux as build-macos
+FROM depends-macos as build-macos
 COPY . .
 RUN RUN cd build/x86_64-unknown-linux-gnu/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="mac-x64" -D DEVELOPER_LOCAL_TOOLS=1 -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-unknown-linux-gnu/share/toolchain.cmake ../../.. && make -j${THREADS}
 
