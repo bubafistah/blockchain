@@ -42,7 +42,7 @@ RUN case ${BUILD} in \
     esac
 
 # 1 thread needs 2gb ram, to adjust add this to the docker build cmd: --build-arg THREADS=20
-ARG THREADS=20
+ARG THREADS=1
 
 WORKDIR /build
 
@@ -55,20 +55,23 @@ COPY ./contrib/depends /build/contrib/depends
 RUN cd /build/contrib/depends && make download-win
 RUN cd /build/contrib/depends && make HOST=x86_64-w64-mingw32 -j${THREADS} && cd ../.. && mkdir -p /build/build/x86_64-w64-mingw32/release
 
-FROM depends-windows as build-windows
-COPY . .
-RUN cd build/x86_64-w64-mingw32/release && cmake -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-w64-mingw32/share/toolchain.cmake ../../.. && make -j${THREADS}
-
 FROM base as depends-linux
 RUN apt-get install -y gperf python3-zmq libdbus-1-dev libharfbuzz-dev crossbuild-essential-amd64
 COPY ./contrib/depends /build/contrib/depends
 RUN cd /build/contrib/depends && make download-linux
 RUN cd /build/contrib/depends && make HOST=x86_64-unknown-linux-gnu -j${THREADS} && cd ../.. && mkdir -p /build/build/x86_64-unknown-linux-gnu/release
 
+FROM depends-windows as build-windows
+COPY . .
+RUN cd build/x86_64-w64-mingw32/release && cmake -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-w64-mingw32/share/toolchain.cmake ../../.. && make -j${THREADS}
+
+
 FROM depends-linux as build-linux
+COPY . .
 RUN make release-static-linux-x86_64 -j${THREADS}
 
 FROM depends-linux as build-macos
+COPY . .
 RUN make release-static-mac-x86_64 -j${THREADS}
 
 
