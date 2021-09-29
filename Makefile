@@ -132,7 +132,7 @@ release-static-linux-armv8:
 
 release-static-linux-x86_64:
 	mkdir -p build/x86_64-unknown-linux-gnu/release
-	cd build/x86_64-unknown-linux-gnu/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-x64" -D DEVELOPER_LOCAL_TOOLS=1 -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-unknown-linux-gnu/share/toolchain.cmake ../.. && $(MAKE)
+	cd build/x86_64-unknown-linux-gnu/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-x64" -D DEVELOPER_LOCAL_TOOLS=1 -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-unknown-linux-gnu/share/toolchain.cmake ../../.. && $(MAKE)
 
 release-static-freebsd-x86_64:
 	mkdir -p $(builddir)/release
@@ -140,7 +140,7 @@ release-static-freebsd-x86_64:
 
 release-static-mac-x86_64:
 	mkdir -p build/mac-x86_64/release
-	cd build/mac-x86_64/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="mac-x64"  -D DEVELOPER_LOCAL_TOOLS=1 -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-unknown-linux-gnu/share/toolchain.cmake ../.. && $(MAKE)
+	cd build/mac-x86_64/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="mac-x64"  -D DEVELOPER_LOCAL_TOOLS=1 -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-unknown-linux-gnu/share/toolchain.cmake ../../.. && $(MAKE)
 
 release-static-linux-i686:
 	mkdir -p $(builddir)/release
