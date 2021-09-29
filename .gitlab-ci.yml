@@ -81,7 +81,7 @@ b:build:
   script:
     - docker pull "$CI_REGISTRY_IMAGE:depends-${TARGET}" || true
     - docker build -o /artifacts --pull --build-arg THREADS=1 --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE:depends-${TARGET} -t $CI_REGISTRY_IMAGE:${TARGET} --target=final-${TARGET} -f Dockerfile .
-    - docker push "$CI_REGISTRY_IMAGE:${TARGET}"
+    - docker image tag "$CI_REGISTRY_IMAGE:${TARGET}" "$CI_REGISTRY_IMAGE:${TARGET}"
   artifacts:
     name: ${TARGET}
     paths:
