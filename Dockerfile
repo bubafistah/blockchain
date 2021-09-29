@@ -68,11 +68,11 @@ RUN cd build/x86_64-w64-mingw32/release && cmake -D MANUAL_SUBMODULES=1 -D CMAKE
 
 FROM depends-linux as build-linux
 COPY . .
-RUN make release-static-linux-x86_64 -j${THREADS}
+RUN cd build/x86_64-unknown-linux-gnu/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-x64" -D DEVELOPER_LOCAL_TOOLS=1 -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-unknown-linux-gnu/share/toolchain.cmake ../../.. && make -j${THREADS}
 
 FROM depends-linux as build-macos
 COPY . .
-RUN make release-static-mac-x86_64 -j${THREADS}
+RUN RUN cd build/x86_64-unknown-linux-gnu/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="mac-x64" -D DEVELOPER_LOCAL_TOOLS=1 -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-unknown-linux-gnu/share/toolchain.cmake ../../.. && make -j${THREADS}
 
 
 FROM scratch as final-linux
