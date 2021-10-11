@@ -48,8 +48,6 @@ b:depends:
   parallel:
     matrix:
       - TARGET: windows
-      - TARGET: linux
-      - TARGET: macos
   services:
     - name: docker:dind
       command: [ "--experimental" ]
@@ -71,8 +69,6 @@ b:build:
   parallel:
     matrix:
       - TARGET: windows
-      - TARGET: linux
-      - TARGET: macos
   services:
     - name: docker:dind
       command: [ "--experimental" ]
@@ -82,5 +78,8 @@ b:build:
     - docker pull "$CI_REGISTRY_IMAGE:depends-${TARGET}" || true
     - docker build --pull --build-arg THREADS=1 --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE:depends-${TARGET} -t $CI_REGISTRY_IMAGE:${TARGET} --target=final-${TARGET} -f Dockerfile .
     - docker push "$CI_REGISTRY_IMAGE:${TARGET}"
+
+
+og:build:
 
 
