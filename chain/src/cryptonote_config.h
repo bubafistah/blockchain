@@ -37,22 +37,23 @@
 #define CRYPTONOTE_DNS_TIMEOUT_MS                       20000
 
 #define CRYPTONOTE_MAX_BLOCK_NUMBER                     500000000
-#define CRYPTONOTE_MAX_TX_SIZE                          1000000
+#define CRYPTONOTE_MAX_TX_SIZE                          1000000000
 #define CRYPTONOTE_MAX_TX_PER_BLOCK                     0x10000000
 #define CRYPTONOTE_PUBLIC_ADDRESS_TEXTBLOB_VER          0
 #define CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW            60
 #define CURRENT_TRANSACTION_VERSION                     2
 #define CURRENT_BLOCK_MAJOR_VERSION                     1
 #define CURRENT_BLOCK_MINOR_VERSION                     0
-#define CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT              60*60*2
-#define CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE             10
+#define CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT              500
+#define CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE             0
 
 #define BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW               60
 
 // MONEY_SUPPLY - total number coins to be generated
-#define MONEY_SUPPLY                                    ((uint64_t)(99948151623421337))
+#define MONEY_SUPPLY                                    ((uint64_t)(-1))
 #define EMISSION_SPEED_FACTOR_PER_MINUTE                (20)
 #define FINAL_SUBSIDY_PER_MINUTE                        ((uint64_t)2900000000)
+#define FIXED_FINAL_SUBSIDY_PER_MINUTE                  ((uint64_t)290000000)
 
 #define CRYPTONOTE_REWARD_BLOCKS_WINDOW                 100
 #define CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V2    1000000 //size of block (bytes) after which reward for block calculated using block size
@@ -98,7 +99,7 @@
 #define BLOCKS_SYNCHRONIZING_DEFAULT_COUNT              20     //by default, blocks count in blocks downloading
 #define BLOCKS_SYNCHRONIZING_MAX_COUNT                  2048   //must be a power of 2, greater than 128, equal to SEEDHASH_EPOCH_BLOCKS
 
-#define CRYPTONOTE_MEMPOOL_TX_LIVETIME                    (86400*3) //seconds, three days
+#define CRYPTONOTE_MEMPOOL_TX_LIVETIME                    86400 //seconds, one days
 #define CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME     604800 //seconds, one week
 
 
@@ -136,10 +137,10 @@
 #define P2P_DEFAULT_PEERS_IN_HANDSHAKE                  250
 #define P2P_MAX_PEERS_IN_HANDSHAKE                      250
 #define P2P_DEFAULT_CONNECTION_TIMEOUT                  5000       //5 seconds
-#define P2P_DEFAULT_SOCKS_CONNECT_TIMEOUT               45         // seconds
+#define P2P_DEFAULT_SOCKS_CONNECT_TIMEOUT               45000         // seconds
 #define P2P_DEFAULT_PING_CONNECTION_TIMEOUT             2000       //2 seconds
 #define P2P_DEFAULT_INVOKE_TIMEOUT                      60*2*1000  //2 minutes
-#define P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT            5000       //5 seconds
+#define P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT            15000       //1HASH_OF_HASES_STEP5 seconds
 #define P2P_DEFAULT_WHITELIST_CONNECTIONS_PERCENT       70
 #define P2P_DEFAULT_ANCHOR_CONNECTIONS_COUNT            2
 #define P2P_DEFAULT_SYNC_SEARCH_CONNECTIONS_COUNT       2
@@ -185,7 +186,7 @@
 
 #define PER_KB_FEE_QUANTIZATION_DECIMALS        8
 
-#define HASH_OF_HASHES_STEP                     512
+#define HASH_OF_HASHES_STEP                     256
 
 #define DEFAULT_TXPOOL_MAX_WEIGHT               648000000ull // 3 days at 300000, in bytes
 
@@ -206,11 +207,11 @@ namespace config
   uint64_t const DEFAULT_FEE_ATOMIC_XMR_PER_KB = 500; // Just a placeholder!  Change me!
   uint8_t const FEE_CALCULATION_MAX_RETRIES = 10;
   uint64_t const DEFAULT_DUST_THRESHOLD = ((uint64_t)200); // 2 * pow(10, 2)
-  uint64_t const BASE_REWARD_CLAMP_THRESHOLD = ((uint64_t)10000); // pow(10, 8)
+  uint64_t const BASE_REWARD_CLAMP_THRESHOLD = ((uint64_t)10000); // pow(10, 4)
 
-  uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 18;
-  uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 19;
-  uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 42;
+  uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0xfb;
+  uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 0x81;
+  uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 0xdeaf7;
   uint16_t const P2P_DEFAULT_PORT = 48772;
   uint16_t const RPC_DEFAULT_PORT = 48782;
   uint16_t const ZMQ_RPC_DEFAULT_PORT = 48792;

@@ -676,7 +676,7 @@ namespace nodetool
     std::set<std::string> full_addrs;
     if (m_nettype == cryptonote::TESTNET)
     {
-        full_addrs.insert("176.9.18.120:38772");
+        full_addrs.insert("88.99.62.1:38772");
     }
     else if (m_nettype == cryptonote::STAGENET)
     {
@@ -687,7 +687,7 @@ namespace nodetool
     else
     {
       // Anycast IP, N+1 nodes
-        full_addrs.insert("176.9.18.120:48772");
+        full_addrs.insert("88.99.62.1:48772");
         // Community Supporters contact@lethean.io to donate
         full_addrs.insert("89.221.223.126:48772");
 

@@ -4,13 +4,13 @@ all: help
 
 test: ## Test build binary
 	chmod +x chain/build/release/bin/letheand
-	chain/build/release/bin/letheand --log-level=4
+	chain/build/release/bin/letheand --log-level=4 --data-dir=data
 
 release: ## Compile Lethean Blockchain
 	$(MAKE) -C $(CODE_DIR) release
 
 static:
-	$(MAKE) -C $(CODE_DIR) release-static
+	$(MAKE) -C $(CODE_DIR) release-static -j20
 
 clean: ## Compile Lethean Blockchain
 	$(MAKE) -C $(CODE_DIR) clean && rm -rf public
