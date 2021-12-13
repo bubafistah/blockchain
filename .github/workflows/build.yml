@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Build
 
 on:
   push:
@@ -7,38 +7,19 @@ on:
     branches: [ 3-update ]
 
 jobs:
-  base:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build the Docker image
-        run: docker build --target=base -t lthn/chain --file Dockerfile --build-arg BUILDKIT_INLINE_CACHE=1  .
-      - uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
   dep-linux:
     runs-on: ubuntu-latest
-    needs: base
     steps:
       - uses: actions/checkout@v2
-      - name: Build the Docker image
-        run: docker build --target=depends-linux -t lthn/chain --file Dockerfile --build-arg BUILDKIT_INLINE_CACHE=1  .
-      - uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
+      - name: Linux Depends
+        run: cd contrib/depends && make HOST=x86_64-unknown-linux-gnu && cd ../.. && mkdir -p build/$(target)/release
   dep-win:
     runs-on: ubuntu-latest
-    needs: base
     steps:
       - uses: actions/checkout@v2
-      - name: Build the Docker image
-        run: docker build --target=depends-windows -t lthn/chain --file Dockerfile --build-arg BUILDKIT_INLINE_CACHE=1  .
-      - uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
+      - name: Windows Depends
+        run: cd contrib/depends && make HOST=x86_64-w64-mingw32 && cd ../.. && mkdir -p build/$(target)/release
   dep-macos:
     runs-on: ubuntu-latest
-    needs: base
     steps:
-      - uses: actions/checkout@v2
-      - name: Build the Docker image
-        run: docker build --target=depends-linux -t lthn/chain --file Dockerfile --build-arg BUILDKIT_INLINE_CACHE=1  .
-      - uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
+      - run: cd contrib/depends && make HOST=x86_64-apple-darwin11 && cd ../.. && mkdir -p build/$(target)/release
