@@ -7,23 +7,29 @@ on:
     branches: [ 3-update ]
 
 jobs:
+  base:
+    runs-on: ubuntu-latest
+    steps:
+      - run: sudo apt-get install -y build-essential g++ gcc libtool libtool-bin cmake autotools-dev automake pkg-config git ca-certificates python3 libssl-dev make gperf xutils-dev bison autopoint curl qttools5-dev-tools g++-mingw-w64
+      - run: sudo update-alternatives --set x86_64-w64-mingw32-g++ $(which x86_64-w64-mingw32-g++-posix)
+      - run: sudo update-alternatives --set x86_64-w64-mingw32-gcc $(which x86_64-w64-mingw32-gcc-posix)
   dep-linux:
     runs-on: ubuntu-latest
+    needs: base
     steps:
       - uses: actions/checkout@v2
       - name: Linux Depends
         run: cd contrib/depends && make HOST=x86_64-unknown-linux-gnu && cd ../.. && mkdir -p build/$(target)/release
   dep-win:
     runs-on: ubuntu-latest
+    needs: base
     steps:
       - uses: actions/checkout@v2
-      - run: sudo apt-get install -y qttools5-dev-tools g++-mingw-w64
-      - run: sudo update-alternatives --set x86_64-w64-mingw32-g++ $(which x86_64-w64-mingw32-g++-posix)
-      - run: sudo update-alternatives --set x86_64-w64-mingw32-gcc $(which x86_64-w64-mingw32-gcc-posix);
       - name: Windows Depends
         run: cd contrib/depends && make HOST=x86_64-w64-mingw32 && cd ../.. && mkdir -p build/$(target)/release
   dep-macos:
     runs-on: ubuntu-latest
+    needs: base
     steps:
       - uses: actions/checkout@v2
       - run: sudo apt-get install -y imagemagick libcap-dev librsvg2-bin libz-dev libbz2-dev libtiff-tools python-dev
