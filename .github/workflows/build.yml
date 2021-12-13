@@ -7,15 +7,22 @@ on:
     branches: [ 3-update ]
 
 jobs:
-
+  base:
+    runs-on: unbuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the Docker image
+        run: docker build --target=base --file Dockerfile --build-arg BUILDKIT_INLINE_CACHE=1  .
   dep-linux:
     runs-on: ubuntu-latest
+    needs: base
     steps:
       - uses: actions/checkout@v2
       - name: Build the Docker image
         run: docker build --target=depends-linux --file Dockerfile --build-arg BUILDKIT_INLINE_CACHE=1  .
   dep-win:
     runs-on: ubuntu-latest
+    needs: base
     steps:
       - uses: actions/checkout@v2
       - name: Build the Docker image
@@ -23,6 +30,7 @@ jobs:
       
   dep-macos:
     runs-on: ubuntu-latest
+    needs: base
     steps:
       - uses: actions/checkout@v2
       - name: Build the Docker image
