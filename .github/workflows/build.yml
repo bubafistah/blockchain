@@ -8,11 +8,22 @@ on:
 
 jobs:
 
-  build:
-
+  dep-linux:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build --target final-linux --file Dockerfile .
+      - uses: actions/checkout@v2
+      - name: Build the Docker image
+        run: docker build --target=depends-linux --file Dockerfile --build-arg BUILDKIT_INLINE_CACHE=1  .
+  dep-win:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the Docker image
+        run: docker build --target=depends-windows --file Dockerfile --build-arg BUILDKIT_INLINE_CACHE=1  .
+      
+  dep-macos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the Docker image
+        run: docker build --target=depends-linux --file Dockerfile --build-arg BUILDKIT_INLINE_CACHE=1  .
