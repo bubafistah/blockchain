@@ -22,4 +22,6 @@ jobs:
   dep-macos:
     runs-on: ubuntu-latest
     steps:
-      - run: cd contrib/depends && make HOST=x86_64-apple-darwin11 && cd ../.. && mkdir -p build/$(target)/release
+      - uses: actions/checkout@v2
+      - name: MacOS Depends
+        run: cd contrib/depends && make HOST=x86_64-apple-darwin11 && cd ../.. && mkdir -p build/$(target)/release
