@@ -5,41 +5,10 @@ FROM ubuntu:20.04 as base
 # arm: aarch64-linux-gnu, riscv64-linux-gnu
 ARG BUILD=x86_64-unknown-linux-gnu
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y build-essential g++ gcc cross-gcc-dev gcc-multilib
-RUN apt-get install -y --no-install-recommends libtool libtool-bin cmake autotools-dev automake pkg-config \
-      bsdmainutils curl git ca-certificates wget gettext python libssl-dev make gperf xutils-dev bison autopoint \
-      protobuf-compiler doxygen graphviz
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential g++ gcc libtool libtool-bin cmake autotools-dev automake pkg-config \
+      git ca-certificates python3 libssl-dev make gperf xutils-dev bison autopoint curl \
+      doxygen graphviz g++-aarch64-linux-gnu g++-arm-linux-gnueabihf g++-x86-64-linux-gnu g++-riscv64-linux-gnu g++-mingw-w64
 
-RUN apt-get install -y libgtest-dev && cd /usr/src/gtest && cmake . && make && mv /usr/src/gtest/* /usr/lib/
-# Package Mapping, eg: --build-arg TARGET=aarch64-linux-gnu --build-arg PACKAGE="python3 gperf g++-aarch64-linux-gnu"
-#
-ENV PACKAGE=""
-RUN case ${BUILD} in \
-    x86_64-unknown-linux-gnu) \
-     PACKAGE=""; \
-    ;; \
-    i686-pc-linux-gnu) \
-     PACKAGE="gperf cmake g++-multilib python3-zmq"; \
-    ;; \
-    arm-linux-gnueabihf) \
-     PACKAGE="python3 gperf g++-arm-linux-gnueabihf"; \
-    ;; \
-    aarch64-linux-gnu) \
-     PACKAGE="python3 gperf g++-aarch64-linux-gnu"; \
-    ;; \
-    x86_64-w64-mingw32) \
-     PACKAGE=""; \
-    ;; \
-    i686-w64-mingw32) \
-     PACKAGE="python3 g++-mingw-w64-i686 qttools5-dev-tools"; \
-    ;; \
-    riscv64-linux-gnu) \
-     PACKAGE="python3 gperf g++-riscv64-linux-gnu"; \
-    ;; \
-    x86_64-unknown-freebsd) \
-     PACKAGE="clang-8 gperf cmake python3-zmq libdbus-1-dev libharfbuzz-dev"; \
-    ;; \
-    esac
 
 # 1 thread needs 2gb ram, to adjust add this to the docker build cmd: --build-arg THREADS=20
 ARG THREADS=1
@@ -47,7 +16,7 @@ ARG THREADS=1
 WORKDIR /build
 
 FROM base as depends-windows
-RUN apt-get install -y python3 g++-mingw-w64 qttools5-dev-tools
+RUN apt-get install -y --no-install-recommends qttools5-dev-tools
 # Windows needs a posix alternative to compile
 RUN update-alternatives --set x86_64-w64-mingw32-g++ $(which x86_64-w64-mingw32-g++-posix) && \
     update-alternatives --set x86_64-w64-mingw32-gcc $(which x86_64-w64-mingw32-gcc-posix);
@@ -56,7 +25,7 @@ RUN cd /build/contrib/depends && make download-win
 RUN cd /build/contrib/depends && make HOST=x86_64-w64-mingw32 -j${THREADS} && cd ../.. && mkdir -p /build/build/x86_64-w64-mingw32/release
 
 FROM base as depends-linux
-RUN apt-get install -y gperf python3-zmq libdbus-1-dev libharfbuzz-dev crossbuild-essential-amd64
+RUN apt-get install -y --no-install-recommends python3-zmq libdbus-1-dev libharfbuzz-dev crossbuild-essential-amd64
 COPY ./contrib/depends /build/contrib/depends
 RUN cd /build/contrib/depends && make download-linux
 RUN cd /build/contrib/depends && make HOST=x86_64-unknown-linux-gnu -j${THREADS} && cd ../.. && mkdir -p /build/build/x86_64-unknown-linux-gnu/release

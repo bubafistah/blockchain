@@ -85,7 +85,7 @@ debug-static-win32:
 
 cmake-release:
 	mkdir -p $(builddir)/release
-	cd $(builddir)/release && cmake -D CMAKE_BUILD_TYPE=Release $(topdir)
+	cd $(builddir)/release && cmake -DMANUAL_SUBMODULES=1 -D CMAKE_BUILD_TYPE=Release $(topdir)
 
 release: cmake-release
 	cd $(builddir)/release && $(MAKE)
