@@ -1,66 +1,16 @@
 name: Build
-
-on:
-  push:
-    branches: [ 3-update ]
-  pull_request:
-    branches: [ 3-update ]
-
+on: push
 jobs:
-  base:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - x86_64-linux-gnu
+          - x86_64-w64-mingw32
+          - release-static-mac-x86_64
     steps:
-      - run: sudo apt-get install -y build-essential crossbuild-essential-amd64 g++ gcc libtool libtool-bin cmake python python-dev python3 autotools-dev automake pkg-config git ca-certificates python3 libssl-dev make gperf xutils-dev bison autopoint curl qttools5-dev-tools gcc-mingw-w64 g++-mingw-w64
-      - run: sudo update-alternatives --set x86_64-w64-mingw32-g++ $(which x86_64-w64-mingw32-g++-posix)
-      - run: sudo update-alternatives --set x86_64-w64-mingw32-gcc $(which x86_64-w64-mingw32-gcc-posix)
-  dep-linux:
-    runs-on: ubuntu-latest
-    needs: base
-    steps:
-      - uses: actions/checkout@v2
-      - name: Cache Depends
-        uses: actions/cache@v2
-        env:
-          cache-name: dep-linux
+      - uses: actions/checkout@v1
         with:
-          path: contrib/depends/x86_64-unknown-linux-gnu
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('contrib/depends/packages/*') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-      - name: Linux Depends
-        run: cd contrib/depends && make HOST=x86_64-unknown-linux-gnu && cd ../.. && mkdir -p build/$(target)/release
-
-  dep-win:
-    runs-on: ubuntu-latest
-    needs: base
-    steps:
-      - uses: actions/checkout@v2
-      - name: Cache Depends
-        uses: actions/cache@v2
-        env:
-          cache-name: dep-win
-        with:
-          path: contrib/depends/x86_64-w64-mingw32
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('contrib/depends/packages/*') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-      - name: Windows Depends
-        run: cd contrib/depends && make HOST=x86_64-w64-mingw32 && cd ../.. && mkdir -p build/$(target)/release
-
-  dep-macos:
-    runs-on: ubuntu-latest
-    needs: base
-    steps:
-      - uses: actions/checkout@v2
-      - name: Cache Depends
-        uses: actions/cache@v2
-        env:
-          cache-name: dep-macos
-        with:
-          path: contrib/depends/x86_64-apple-darwin11
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('contrib/depends/packages/*') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-      - run: sudo apt-get install -y imagemagick libcap-dev librsvg2-bin libz-dev libbz2-dev libtiff-tools python-dev
-      - name: MacOS Depends
-        run: cd contrib/depends && make HOST=x86_64-apple-darwin11 && cd ../.. && mkdir -p build/$(target)/release
+          submodules: recursive
+      - run: docker build --target ${{ matrix.target }} -t lthn/chain:${{ matrix.target }} .

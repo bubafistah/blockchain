@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 
 
 # 1 thread needs 2gb ram, to adjust add this to the docker build cmd: --build-arg THREADS=20
-ARG THREADS=1
+ARG THREADS=20
 
 WORKDIR /build
 
@@ -47,14 +47,14 @@ COPY . .
 RUN cd build/x86_64-unknown-linux-gnu/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="mac-x64" -D DEVELOPER_LOCAL_TOOLS=1 -D MANUAL_SUBMODULES=1 -D CMAKE_TOOLCHAIN_FILE=/build/contrib/depends/x86_64-unknown-linux-gnu/share/toolchain.cmake ../../.. && make -j${THREADS}
 
 
-FROM scratch as final-linux
+FROM scratch as x86_64-linux-gnu
 COPY --from=build-linux /build/build/x86_64-unknown-linux-gnu/release/bin /
-FROM scratch as final-windows
+FROM scratch as x86_64-w64-mingw32
 COPY --from=build-windows /build/build/x86_64-w64-mingw32/release/bin /
-FROM scratch as final-macos
+FROM scratch as x86_64-apple-darwin11
 COPY --from=build-macos /build/build/* /
 
 FROM scratch as final
-COPY --from=final-linux / /linux
-COPY --from=final-windows / /windows
-COPY --from=final-macos / /macos
+COPY --from=x86_64-linux-gnu / /linux
+COPY --from=x86_64-w64-mingw32 / /windows
+COPY --from=x86_64-apple-darwin11 / /macos
