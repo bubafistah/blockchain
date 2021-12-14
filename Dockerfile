@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y build-essential cmake libboost-all-dev 
                        libhidapi-dev libusb-1.0-0-dev libprotobuf-dev protobuf-compiler libudev-dev \
                        ca-certificates git
 
-ARG THREADS=20
+ARG THREADS=3
 ARG RELEASE_TYPE=release-static-linux-x86_64
 # this is only in the build layers,
 WORKDIR /lethean
