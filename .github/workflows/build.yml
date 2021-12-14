@@ -10,10 +10,9 @@ jobs:
   base:
     runs-on: ubuntu-latest
     steps:
-      - run: sudo apt-get install -y build-essential g++ gcc libtool libtool-bin cmake python3-pip python python3 autotools-dev automake pkg-config git ca-certificates python3 libssl-dev make gperf xutils-dev bison autopoint curl qttools5-dev-tools gcc-mingw-w64 g++-mingw-w64
-      - run: sudo update-alternatives --set x86_64-w64-mingw32-g++ $(which x86_64-w64-mingw32-g++-posix)
-      - run: sudo update-alternatives --set x86_64-w64-mingw32-gcc $(which x86_64-w64-mingw32-gcc-posix)
-      - run: pip3 install setuptools
+      - run: sudo apt-get install -y build-essential crossbuild-essential-amd64 g++ gcc libtool libtool-bin cmake python python-dev python3 autotools-dev automake pkg-config git ca-certificates python3 libssl-dev make gperf xutils-dev bison autopoint curl qttools5-dev-tools gcc-mingw-w64 g++-mingw-w64
+      - run: update-alternatives --set x86_64-w64-mingw32-g++ $(which x86_64-w64-mingw32-g++-posix)
+      - run: update-alternatives --set x86_64-w64-mingw32-gcc $(which x86_64-w64-mingw32-gcc-posix)
   dep-linux:
     runs-on: ubuntu-latest
     needs: base
