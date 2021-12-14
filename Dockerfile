@@ -1,43 +1,19 @@
-FROM lthn/build:lthn-chain-linux as builder
+FROM ubuntu:16.04 as builder
 
-ARG BASE_DIR="/home/lthn/chain"
-ARG BIN_DIR="${BASE_DIR}/bin"
-ARG SRC_DIR="${BASE_DIR}/src"
-ARG COMPILE=0
+RUN apt-get update && apt-get install -y build-essential cmake libboost-all-dev pkg-config libssl-dev libzmq3-dev \
+                       libunbound-dev libsodium-dev libunwind8-dev liblzma-dev libreadline6-dev \
+                       libldns-dev libexpat1-dev doxygen graphviz libpgm-dev qttools5-dev-tools \
+                       libhidapi-dev libusb-1.0-0-dev libprotobuf-dev protobuf-compiler libudev-dev \
+                       ca-certificates git
+
+ARG THREADS=20
 ARG RELEASE_TYPE=release-static-linux-x86_64
 # this is only in the build layers,
-WORKDIR $SRC_DIR
-COPY --from=lthn/chain $BIN_DIR $SRC_DIR/build/release/bin
+WORKDIR /lethean
 
-COPY . ${SRC_DIR}
+COPY . .
 
-RUN if [ "${COMPILE}" = 1 ] ; then cd $SRC_DIR && rm -rf build && make ${RELEASE_TYPE} ; else echo "using precompile from lthn/chain"; fi
+RUN make ${RELEASE_TYPE} -j${THREADS}
 
-FROM ubuntu:20.04 as final
-
-ARG BASE_DIR="/home/lthn/chain"
-ARG BIN_DIR="${BASE_DIR}/bin"
-ARG SRC_DIR="${BASE_DIR}/src"
-
-ENV BIN_DIR="${BIN_DIR}"
-
-ENV CONF_DIR="${BASE_DIR}/etc"
-ENV LOG_DIR="${BASE_DIR}/log"
-ENV DATA_DIR="${BASE_DIR}/data"
-
-RUN adduser --disabled-password  --gecos "" lthn
-
-COPY --from=builder --chown=lthn:lthn $SRC_DIR/utils/docker/home-dir $BASE_DIR
-COPY --from=builder --chown=lthn:lthn $SRC_DIR/build/release/bin $BIN_DIR
-RUN chmod +x $BASE_DIR/lethean-blockchain.sh $BIN_DIR/*
-# a copy of the binaries for extraction.
-WORKDIR $BASE_DIR
-
-EXPOSE 48782
-EXPOSE 48772
-
-
-CMD ["docker"]
-ENTRYPOINT ["./lethean-blockchain.sh"]
-
-
+FROM scratch as final
+COPY --from=builder /lethean/build/release/bin /
