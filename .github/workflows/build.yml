@@ -7,13 +7,8 @@ jobs:
       matrix:
         target:
           - release-static-linux-x86_64
-          - release-static-linux-armv6
-          - release-static-linux-armv7
-          - release-static-linux-armv8
-          - release-static-linux-x86_64
           - release-static-freebsd-x86_64
           - release-static-mac-x86_64
-          - release-static-linux-i686
     steps:
       - uses: actions/checkout@v1
         with:
